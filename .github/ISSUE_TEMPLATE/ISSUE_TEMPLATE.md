@@ -1,4 +1,3 @@
-
 ---
 name: issue template
 about: feature 이슈 템플릿
