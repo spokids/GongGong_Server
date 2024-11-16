@@ -1,4 +1,4 @@
-package com.example.gonggong_server.review.domain.entity;
+package com.example.gonggong_server.scrap.domain.entity;
 
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
@@ -17,20 +17,15 @@ import java.time.LocalDateTime;
 @Builder
 @EntityListeners(AuditingEntityListener.class)
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class Review {
+public class Scrap {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long reviewId;
+    private Long scrapId;
 
     @NotNull
     private Long userId;
     @NotNull
     private Long programId;
-
-    @Lob
-    @Column(columnDefinition = "LONGTEXT")
-    private String content;
-    private String imageUrl;
 
     @CreatedDate
     @Column(updatable = false)
