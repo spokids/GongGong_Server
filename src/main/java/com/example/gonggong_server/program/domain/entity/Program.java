@@ -34,7 +34,7 @@ public class Program {
     @NotNull
     private String districtName;
     @NotNull
-    private String facilityAdrress;
+    private String facilityAddress;
     @NotNull
     private String programName;
     @NotNull
