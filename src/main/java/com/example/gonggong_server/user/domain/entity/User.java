@@ -1,5 +1,6 @@
 package com.example.gonggong_server.user.domain.entity;
 
+import org.springframework.lang.Nullable;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 import lombok.*;
