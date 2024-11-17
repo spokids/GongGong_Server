@@ -1,6 +1,6 @@
 package com.example.gonggong_server.auth.application.service;
 
-import com.example.gonggong_server.auth.api.request.JoinDTO;
+import com.example.gonggong_server.auth.api.request.RegisterRequestDTO;
 import com.example.gonggong_server.auth.exception.AuthException;
 import com.example.gonggong_server.global.status.ErrorStatus;
 import com.example.gonggong_server.user.domain.entity.User;
@@ -16,20 +16,20 @@ import org.springframework.transaction.annotation.Transactional;
 public class AuthService {
 
     private final UserRepository userRepository;
-    private final BCryptPasswordEncoder bCryptPasswordEncoder;
 
 
-    public void register(JoinDTO joinDTO) {
+    public void register(RegisterRequestDTO registerRequestDTO) {
+        String userId = registerRequestDTO.userId();
+        String nickName = registerRequestDTO.nickName();
+        String password = registerRequestDTO.password();
 
-        String nickName = joinDTO.nickName();
-        String password = joinDTO.password();
-
-        Boolean isExist = userRepository.existsByNickName(nickName);
+        Boolean isExist = userRepository.existsByUserId(userId);
 
         if (isExist) {
-            throw new AuthException(ErrorStatus.NICKNAME_EXISTS);
+            throw new AuthException(ErrorStatus.USER_EXISTS);
         }
         User user = User.builder()
+                .userId(userId)
                 .nickName(nickName)
                 .password(password)
                 .build();

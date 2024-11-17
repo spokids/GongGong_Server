@@ -1,6 +1,6 @@
 package com.example.gonggong_server.auth.api.controller;
 
-import com.example.gonggong_server.auth.api.request.JoinDTO;
+import com.example.gonggong_server.auth.api.request.RegisterRequestDTO;
 import com.example.gonggong_server.auth.application.service.AuthService;
 import com.example.gonggong_server.global.response.ApiResponse;
 import com.example.gonggong_server.global.status.SuccessStatus;
@@ -16,10 +16,11 @@ import org.springframework.web.bind.annotation.RestController;
 public class AuthController {
 
     private final AuthService authService;
-    @PostMapping("/register")
-    public ResponseEntity<ApiResponse<Void>> register(JoinDTO joinDTO) {
 
-        authService.register(joinDTO);
+    @PostMapping("/register")
+    public ResponseEntity<ApiResponse<Void>> register(RegisterRequestDTO registerRequestDTO) {
+
+        authService.register(registerRequestDTO);
 
         return ApiResponse.success(SuccessStatus.OK);
     }

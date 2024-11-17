@@ -15,13 +15,15 @@ public enum ErrorStatus {
 
     // 403
     FORBIDDEN(HttpStatus.FORBIDDEN, "Forbidden"),
-    NICKNAME_EXISTS(HttpStatus.FORBIDDEN, "닉네임이 이미 존재합니다"),
 
     // 404
     NOT_FOUND(HttpStatus.NOT_FOUND, "Not Found"),
 
     // 405
     METHOD_NOT_ALLOWED(HttpStatus.METHOD_NOT_ALLOWED, "Method Not Allowed"),
+
+    //409
+    USER_EXISTS(HttpStatus.CONFLICT, "이미 존재하는 유저입니다"),
 
     // 500
     INTERNAL_SERVER_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, "서버 내부에서 오류가 발생했습니다.");
