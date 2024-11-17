@@ -1,8 +1,11 @@
 package com.example.gonggong_server.auth.application.service;
 
+import com.example.gonggong_server.auth.api.request.LoginRequestDTO;
 import com.example.gonggong_server.auth.api.request.RegisterRequestDTO;
+import com.example.gonggong_server.auth.application.response.LoginResponseDTO;
 import com.example.gonggong_server.auth.exception.AuthException;
 import com.example.gonggong_server.global.status.ErrorStatus;
+import com.example.gonggong_server.global.util.JWTUtil;
 import com.example.gonggong_server.user.domain.entity.User;
 import com.example.gonggong_server.user.domain.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
@@ -15,25 +18,47 @@ import org.springframework.transaction.annotation.Transactional;
 @Transactional
 public class AuthService {
 
-    private final UserRepository userRepository;
+    private static final long ACCESS_TOKEN_EXPIRATION = 3600000L; // 1시간
 
+    private final UserRepository userRepository;
+    private final JWTUtil jwtUtil;
+    private final BCryptPasswordEncoder passwordEncoder;
 
     public void register(RegisterRequestDTO registerRequestDTO) {
-        String userId = registerRequestDTO.userId();
-        String nickName = registerRequestDTO.nickName();
-        String password = registerRequestDTO.password();
+        validateUserIdUniqueness(registerRequestDTO.userId());
 
-        Boolean isExist = userRepository.existsByUserId(userId);
-
-        if (isExist) {
-            throw new AuthException(ErrorStatus.USER_EXISTS);
-        }
         User user = User.builder()
-                .userId(userId)
-                .nickName(nickName)
-                .password(password)
+                .userId(registerRequestDTO.userId())
+                .nickName(registerRequestDTO.nickName())
+                .password(passwordEncoder.encode(registerRequestDTO.password())) // 비밀번호 암호화
                 .build();
 
         userRepository.save(user);
+    }
+
+    public LoginResponseDTO login(LoginRequestDTO loginRequestDTO) {
+        User user = findUserByUserId(loginRequestDTO.userId());
+        validatePassword(loginRequestDTO.password(), user.getPassword());
+
+        String token = jwtUtil.createJwt(user.getUserId(), ACCESS_TOKEN_EXPIRATION);
+
+        return LoginResponseDTO.of(token);
+    }
+
+    private void validateUserIdUniqueness(String userId) {
+        if (userRepository.existsByUserId(userId)) {
+            throw new AuthException(ErrorStatus.USER_ALREADY_EXISTS);
+        }
+    }
+
+    private User findUserByUserId(String userId) {
+        return userRepository.findByUserId(userId)
+                .orElseThrow(() -> new AuthException(ErrorStatus.USER_NOT_FOUND));
+    }
+
+    private void validatePassword(String rawPassword, String encodedPassword) {
+        if (!passwordEncoder.matches(rawPassword, encodedPassword)) {
+            throw new AuthException(ErrorStatus.PASSWORD_NOT_MATCH);
+        }
     }
 }
