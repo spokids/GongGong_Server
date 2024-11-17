@@ -26,7 +26,6 @@ public class Review {
     private Long programId;
 
     @Lob
-    @Column(columnDefinition = "LONGTEXT")
     private String content;
     private String imageUrl;
 

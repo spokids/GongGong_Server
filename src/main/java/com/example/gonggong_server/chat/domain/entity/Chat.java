@@ -1,6 +1,5 @@
-package com.example.gonggong_server.user.domain.entity;
+package com.example.gonggong_server.chat.domain.entity;
 
-import org.springframework.lang.Nullable;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 import lombok.*;
@@ -14,25 +13,26 @@ import java.time.LocalDateTime;
 @Entity
 @Builder
 @EntityListeners(AuditingEntityListener.class)
-@AllArgsConstructor
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class User {
+@AllArgsConstructor
+public class Chat {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long userId;
+    private Long chatId;
 
     @NotNull
-    private String userInputId;
+    private Long chatRoomId;
 
     @NotNull
-    private String password;
+    private Boolean author;
 
-    private String nickName;
+    private String content;
 
     @CreatedDate
     @Column(updatable = false)
     private LocalDateTime createDate;
     @LastModifiedDate
     private LocalDateTime modifyDate;
+
 
 }
