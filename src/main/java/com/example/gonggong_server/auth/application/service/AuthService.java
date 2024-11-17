@@ -25,36 +25,36 @@ public class AuthService {
     private final BCryptPasswordEncoder passwordEncoder;
 
     public TokenResponseDTO register(RegisterRequestDTO registerRequestDTO) {
-        validateUserIdUniqueness(registerRequestDTO.userId());
+        validateUserIdUniqueness(registerRequestDTO.userInputId());
 
         User user = User.builder()
-                .userId(registerRequestDTO.userId())
+                .userInputId(registerRequestDTO.userInputId())
                 .nickName(registerRequestDTO.nickName())
                 .password(passwordEncoder.encode(registerRequestDTO.password())) // 비밀번호 암호화
                 .build();
-        String token = jwtUtil.createJwt(user.getUserId(), ACCESS_TOKEN_EXPIRATION);
+        String token = jwtUtil.createJwt(user.getUserInputId(), ACCESS_TOKEN_EXPIRATION);
         userRepository.save(user);
 
         return TokenResponseDTO.of(token);
     }
 
     public TokenResponseDTO login(LoginRequestDTO loginRequestDTO) {
-        User user = findUserByUserId(loginRequestDTO.userId());
+        User user = findUserByUserInputId(loginRequestDTO.userInputId());
         validatePassword(loginRequestDTO.password(), user.getPassword());
 
-        String token = jwtUtil.createJwt(user.getUserId(), ACCESS_TOKEN_EXPIRATION);
+        String token = jwtUtil.createJwt(user.getUserInputId(), ACCESS_TOKEN_EXPIRATION);
 
         return TokenResponseDTO.of(token);
     }
 
-    private void validateUserIdUniqueness(String userId) {
-        if (userRepository.existsByUserId(userId)) {
+    private void validateUserIdUniqueness(String userInputId) {
+        if (userRepository.existsByUserInputId(userInputId)) {
             throw new AuthException(ErrorStatus.USER_ALREADY_EXISTS);
         }
     }
 
-    private User findUserByUserId(String userId) {
-        return userRepository.findByUserId(userId)
+    private User findUserByUserInputId(String userInputId) {
+        return userRepository.findByUserInputId(userInputId)
                 .orElseThrow(() -> new AuthException(ErrorStatus.USER_NOT_FOUND));
     }
 
