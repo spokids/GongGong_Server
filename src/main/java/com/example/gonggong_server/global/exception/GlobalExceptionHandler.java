@@ -1,5 +1,6 @@
 package com.example.gonggong_server.global.exception;
 
+import com.example.gonggong_server.auth.exception.AuthException;
 import com.example.gonggong_server.global.response.ApiResponse;
 import com.example.gonggong_server.global.status.ErrorStatus;
 import lombok.extern.slf4j.Slf4j;
@@ -101,6 +102,12 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
         log.error(">>>>>>>>Internal Server Error: {}", e.getMessage());
         e.printStackTrace();
         return ApiResponse.error(ErrorStatus.INTERNAL_SERVER_ERROR);
+    }
+    // AuthException 처리
+    @ExceptionHandler(AuthException.class)
+    public ResponseEntity<ApiResponse<Void>> handleAuthException(AuthException e) {
+        log.warn(">>>>>>>>AuthException: {}", e.getErrorStatus().getMessage());
+        return ApiResponse.error(e.getErrorStatus());
     }
 
     // 로그 기록 메서드

@@ -15,6 +15,7 @@ public enum ErrorStatus {
 
     // 403
     FORBIDDEN(HttpStatus.FORBIDDEN, "Forbidden"),
+    NICKNAME_EXISTS(HttpStatus.FORBIDDEN, "닉네임이 이미 존재합니다"),
 
     // 404
     NOT_FOUND(HttpStatus.NOT_FOUND, "Not Found"),
