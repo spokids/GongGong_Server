@@ -2,7 +2,7 @@ package com.example.gonggong_server.auth.api.controller;
 
 import com.example.gonggong_server.auth.api.request.LoginRequestDTO;
 import com.example.gonggong_server.auth.api.request.RegisterRequestDTO;
-import com.example.gonggong_server.auth.application.response.LoginResponseDTO;
+import com.example.gonggong_server.auth.application.response.TokenResponseDTO;
 import com.example.gonggong_server.auth.application.service.AuthService;
 import com.example.gonggong_server.global.response.ApiResponse;
 import com.example.gonggong_server.global.status.SuccessStatus;
@@ -21,14 +21,14 @@ public class AuthController {
     private final AuthService authService;
 
     @PostMapping("/register")
-    public ResponseEntity<ApiResponse<Void>> register(@RequestBody RegisterRequestDTO registerRequestDTO) {
-        authService.register(registerRequestDTO);
-        return ApiResponse.success(SuccessStatus.OK);
+    public ResponseEntity<ApiResponse<TokenResponseDTO>> register(@RequestBody RegisterRequestDTO registerRequestDTO) {
+        TokenResponseDTO response = authService.register(registerRequestDTO);
+        return ApiResponse.success(SuccessStatus.OK, response);
     }
-    
+
     @PostMapping("/login")
-    public ResponseEntity<ApiResponse<LoginResponseDTO>> login(@RequestBody LoginRequestDTO loginRequestDTO) {
-        LoginResponseDTO response = authService.login(loginRequestDTO);
+    public ResponseEntity<ApiResponse<TokenResponseDTO>> login(@RequestBody LoginRequestDTO loginRequestDTO) {
+        TokenResponseDTO response = authService.login(loginRequestDTO);
         return ApiResponse.success(SuccessStatus.OK, response);
     }
 }

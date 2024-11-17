@@ -1,4 +1,4 @@
-package com.example.gonggong_server.global.util;
+package com.example.gonggong_server.global.jwt;
 
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;

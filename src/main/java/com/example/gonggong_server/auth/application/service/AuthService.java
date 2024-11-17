@@ -2,10 +2,10 @@ package com.example.gonggong_server.auth.application.service;
 
 import com.example.gonggong_server.auth.api.request.LoginRequestDTO;
 import com.example.gonggong_server.auth.api.request.RegisterRequestDTO;
-import com.example.gonggong_server.auth.application.response.LoginResponseDTO;
+import com.example.gonggong_server.auth.application.response.TokenResponseDTO;
 import com.example.gonggong_server.auth.exception.AuthException;
 import com.example.gonggong_server.global.status.ErrorStatus;
-import com.example.gonggong_server.global.util.JWTUtil;
+import com.example.gonggong_server.global.jwt.JWTUtil;
 import com.example.gonggong_server.user.domain.entity.User;
 import com.example.gonggong_server.user.domain.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
@@ -18,13 +18,13 @@ import org.springframework.transaction.annotation.Transactional;
 @Transactional
 public class AuthService {
 
-    private static final long ACCESS_TOKEN_EXPIRATION = 3600000L; // 1시간
+    private static final long ACCESS_TOKEN_EXPIRATION = 7200000L; // 2시간
 
     private final UserRepository userRepository;
     private final JWTUtil jwtUtil;
     private final BCryptPasswordEncoder passwordEncoder;
 
-    public void register(RegisterRequestDTO registerRequestDTO) {
+    public TokenResponseDTO register(RegisterRequestDTO registerRequestDTO) {
         validateUserIdUniqueness(registerRequestDTO.userId());
 
         User user = User.builder()
@@ -32,17 +32,19 @@ public class AuthService {
                 .nickName(registerRequestDTO.nickName())
                 .password(passwordEncoder.encode(registerRequestDTO.password())) // 비밀번호 암호화
                 .build();
-
+        String token = jwtUtil.createJwt(user.getUserId(), ACCESS_TOKEN_EXPIRATION);
         userRepository.save(user);
+
+        return TokenResponseDTO.of(token);
     }
 
-    public LoginResponseDTO login(LoginRequestDTO loginRequestDTO) {
+    public TokenResponseDTO login(LoginRequestDTO loginRequestDTO) {
         User user = findUserByUserId(loginRequestDTO.userId());
         validatePassword(loginRequestDTO.password(), user.getPassword());
 
         String token = jwtUtil.createJwt(user.getUserId(), ACCESS_TOKEN_EXPIRATION);
 
-        return LoginResponseDTO.of(token);
+        return TokenResponseDTO.of(token);
     }
 
     private void validateUserIdUniqueness(String userId) {

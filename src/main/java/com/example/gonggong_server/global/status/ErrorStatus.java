@@ -9,10 +9,12 @@ import org.springframework.http.HttpStatus;
 public enum ErrorStatus {
     // 400
     BAD_REQUEST(HttpStatus.BAD_REQUEST, "Bad Request"),
+    INVALID_AUTHORIZATION_HEADER(HttpStatus.BAD_REQUEST, "헤더 정보가 잘못됐습니다"),
 
     // 401
     UNAUTHORIZED(HttpStatus.UNAUTHORIZED, "Unauthorized"),
     PASSWORD_NOT_MATCH(HttpStatus.UNAUTHORIZED, "비밀번호가 일치하지 않습니다"),
+    TOKEN_EXPIRED(HttpStatus.UNAUTHORIZED, "토큰이 만료되었습니다"),
 
     // 403
     FORBIDDEN(HttpStatus.FORBIDDEN, "Forbidden"),

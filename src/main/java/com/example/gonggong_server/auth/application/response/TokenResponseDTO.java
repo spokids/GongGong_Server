@@ -9,11 +9,11 @@ import lombok.NoArgsConstructor;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class LoginResponseDTO {
+public class TokenResponseDTO {
     private String token;
 
-    public static LoginResponseDTO of(String token) {
-        return LoginResponseDTO.builder()
+    public static TokenResponseDTO of(String token) {
+        return TokenResponseDTO.builder()
                 .token(token)
                 .build();
     }
