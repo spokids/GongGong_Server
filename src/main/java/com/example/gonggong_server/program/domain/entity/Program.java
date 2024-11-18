@@ -1,8 +1,5 @@
 package com.example.gonggong_server.program.domain.entity;
 
-import com.example.gonggong_server.program.domain.value.Ability;
-import com.example.gonggong_server.program.domain.value.ProvinceName;
-import com.example.gonggong_server.program.domain.value.Type;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 import lombok.*;
@@ -10,6 +7,7 @@ import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
+import java.sql.Time;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 
@@ -29,8 +27,7 @@ public class Program {
     @NotNull
     private String facilityType;
     @NotNull
-    @Enumerated(EnumType.STRING)
-    private ProvinceName provinceName;
+    private String provinceName;
     @NotNull
     private String districtName;
     @NotNull
@@ -53,20 +50,18 @@ public class Program {
     private String participantCount;
     private Boolean leaderQualification;
     @NotNull
-    @Enumerated(EnumType.STRING)
-    private Type type;
+    private String type;
     @NotNull
     private String subDistrict;
     @NotNull
     private String fullAddress;
-    @Enumerated(EnumType.STRING)
-    private Ability ability;
+    private String ability;
     @NotNull
     private Integer startAge;
     @NotNull
     private Integer endAge;
-    private LocalDateTime startTime;
-    private LocalDateTime endTime;
+    private Time startTime;
+    private Time endTime;
 
 
     @CreatedDate
