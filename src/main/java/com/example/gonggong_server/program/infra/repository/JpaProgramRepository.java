@@ -11,5 +11,8 @@ import java.util.List;
 public interface JpaProgramRepository extends ProgramRepository, JpaRepository<Program, Long> {
 
     @Query("SELECT DISTINCT p.districtName FROM Program p WHERE p.provinceName = :province")
-    List<String> findDistinctDistrictByProvince(@Param("province") String province);
+    List<String> findSigunguByProvince(@Param("province") String province);
+
+    @Query("SELECT DISTINCT p.subDistrict FROM Program p WHERE p.provinceName = :province AND p.districtName = :sigungu")
+    List<String> findDongBySigungu(@Param("province") String province, @Param("sigungu") String sigungu);
 }
