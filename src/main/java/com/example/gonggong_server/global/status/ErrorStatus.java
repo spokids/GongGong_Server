@@ -24,6 +24,7 @@ public enum ErrorStatus {
     // 404
     NOT_FOUND(HttpStatus.NOT_FOUND, "Not Found"),
     USER_NOT_FOUND(HttpStatus.NOT_FOUND, "유저가 존재하지 않습니다."),
+    NO_PROGRAMS_FOUND(HttpStatus.NOT_FOUND, "조건에 맞는 프로그램이 존재하지 않습니다."),
 
     // 405
     METHOD_NOT_ALLOWED(HttpStatus.METHOD_NOT_ALLOWED, "Method Not Allowed"),
