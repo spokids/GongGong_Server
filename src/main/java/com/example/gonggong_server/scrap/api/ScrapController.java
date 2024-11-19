@@ -21,7 +21,7 @@ public class ScrapController {
             @PathVariable("programId") Long programId
     ) {
         scrapService.scrapProgram(userInputId, programId);
-        return ApiResponse.success(SuccessStatus.OK);
+        return ApiResponse.success(SuccessStatus.CREATED);
     }
 
     @DeleteMapping("/{programId}")
