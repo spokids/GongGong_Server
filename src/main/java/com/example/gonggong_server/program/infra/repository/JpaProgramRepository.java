@@ -20,7 +20,7 @@ public interface JpaProgramRepository extends ProgramRepository, JpaRepository<P
 
 
     @Query("SELECT p FROM Program p " +
-            "WHERE (:province IS NULL OR p.provinceName = :province) " +
+            "WHERE p.provinceName = :province " +
             "AND (:sigungu IS NULL OR p.districtName = :sigungu) " +
             "AND (:dong IS NULL OR p.subDistrict = :dong) " +
             "AND (:age IS NULL OR :age BETWEEN p.startAge AND p.endAge) " +
