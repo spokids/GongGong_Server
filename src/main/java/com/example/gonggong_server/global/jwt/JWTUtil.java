@@ -23,9 +23,9 @@ public class JWTUtil {
         key = Keys.hmacShaKeyFor(byteSecretKey);
     }
 
-    public String getNickName(String token) {
+    public String getUserInputId(String token) {
 
-        return Jwts.parserBuilder().setSigningKey(key).build().parseClaimsJws(token).getBody().get("nickName", String.class);
+        return Jwts.parserBuilder().setSigningKey(key).build().parseClaimsJws(token).getBody().get("userInputId", String.class);
     }
 
     public Boolean isExpired(String token) {

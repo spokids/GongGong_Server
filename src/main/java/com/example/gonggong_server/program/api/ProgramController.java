@@ -7,6 +7,7 @@ import com.example.gonggong_server.program.application.response.SigunguResponseD
 import com.example.gonggong_server.program.application.service.ProgramService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -34,6 +35,13 @@ public class ProgramController {
     ) {
         DongResponseDTO response = programService.getDongList(province, sigungu);
         return ApiResponse.success(SuccessStatus.OK, response);
+    }
+
+    @GetMapping("/test")
+    public ResponseEntity<ApiResponse<String>> test(
+            @AuthenticationPrincipal String userInputId
+    ) {
+        return ApiResponse.success(SuccessStatus.OK, "회원 아이디 : " + userInputId);
     }
 
 }
