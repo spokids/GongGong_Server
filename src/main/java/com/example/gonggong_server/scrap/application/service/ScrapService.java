@@ -43,4 +43,15 @@ public class ScrapService {
         return userRepository.findByUserInputId(userInputId)
                 .orElseThrow(() -> new AuthException(ErrorStatus.USER_NOT_FOUND));
     }
+
+    @Transactional
+    public void cancelScrapProgram(String userInputId, Long programId) {
+        User user = findUserById(userInputId);
+
+        int deletedCount = scrapRepository.deleteByUserIdAndProgramId(user.getUserId(), programId);
+
+        if (deletedCount == 0) {
+            throw new ScrapException(ErrorStatus.NOT_SCRAPPED);
+        }
+    }
 }

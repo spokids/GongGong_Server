@@ -23,4 +23,13 @@ public class ScrapController {
         scrapService.scrapProgram(userInputId, programId);
         return ApiResponse.success(SuccessStatus.OK);
     }
+
+    @DeleteMapping("/{programId}")
+    public ResponseEntity<ApiResponse<String>> cancelScrapProgram(
+            @AuthenticationPrincipal String userInputId,
+            @PathVariable("programId") Long programId
+    ) {
+        scrapService.cancelScrapProgram(userInputId, programId);
+        return ApiResponse.success(SuccessStatus.OK);
+    }
 }
