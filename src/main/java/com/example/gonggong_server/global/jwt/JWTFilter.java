@@ -20,10 +20,18 @@ import java.io.IOException;
 public class JWTFilter extends OncePerRequestFilter {
 
     private final JWTUtil jwtUtil;
+    private final String[] loginUrl;
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
             throws ServletException, IOException {
+        String requestURI = request.getRequestURI();
+
+        // loginUrl에 포함되지 않은 요청은 필터를 건너뜀
+        if (!isLoginUrl(requestURI)) {
+            filterChain.doFilter(request, response);
+            return;
+        }
         try{
             String authorization = request.getHeader("Authorization");
 
@@ -79,5 +87,15 @@ public class JWTFilter extends OncePerRequestFilter {
             throw new AuthException(ErrorStatus.INVALID_AUTHORIZATION_HEADER);
         }
     }
+
+    private boolean isLoginUrl(String requestURI) {
+        for (String url : loginUrl) {
+            if (requestURI.startsWith(url.replace("/**", ""))) {
+                return true;
+            }
+        }
+        return false;
+    }
 }
+
 
