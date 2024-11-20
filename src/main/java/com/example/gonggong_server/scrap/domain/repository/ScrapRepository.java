@@ -10,4 +10,5 @@ public interface ScrapRepository {
     Boolean existsByUserIdAndProgramId(Long userId, Long programId);
     int deleteByUserIdAndProgramId(Long userId, Long programId);
     Page<Scrap> findScraps(Long userId, Pageable pageable);
+    void deleteByUserId(Long userId);
 }
