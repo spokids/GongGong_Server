@@ -6,4 +6,5 @@ public interface ScrapRepository {
     Scrap save(Scrap scrap);
     Boolean existsByUserIdAndProgramId(Long userId, Long programId);
     int deleteByUserIdAndProgramId(Long userId, Long programId);
+    void deleteByUserId(Long userId);
 }
