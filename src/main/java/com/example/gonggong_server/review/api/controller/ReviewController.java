@@ -3,6 +3,7 @@ package com.example.gonggong_server.review.api.controller;
 import com.example.gonggong_server.global.response.ApiResponse;
 import com.example.gonggong_server.global.status.SuccessStatus;
 import com.example.gonggong_server.review.api.request.ReviewRequestDTO;
+import com.example.gonggong_server.review.application.response.ReviewListResponseDTO;
 import com.example.gonggong_server.review.application.response.ReviewResponseDTO;
 import com.example.gonggong_server.review.application.service.ReviewService;
 import lombok.RequiredArgsConstructor;
@@ -20,7 +21,7 @@ public class ReviewController {
 
     private final ReviewService reviewService;
 
-    @PostMapping("/{programId}")
+    @PostMapping("/create/{programId}")
     public ResponseEntity<ApiResponse<ReviewResponseDTO>> createReview(
             @AuthenticationPrincipal String userInputId,
             @PathVariable Long programId,
@@ -28,7 +29,15 @@ public class ReviewController {
             @RequestPart(value = "request") ReviewRequestDTO request
     ) throws IOException {
         ReviewResponseDTO response = reviewService.createReview(userInputId, programId, image, request);
-        return ApiResponse.success(SuccessStatus.OK, response);
+        return ApiResponse.success(SuccessStatus.CREATED, response);
 
+    }
+
+    @GetMapping("/list/{programId}")
+    public ResponseEntity<ApiResponse<ReviewListResponseDTO>> getReviews(
+            @PathVariable Long programId
+    ) {
+        ReviewListResponseDTO response = reviewService.getReviews(programId);
+        return ApiResponse.success(SuccessStatus.OK, response);
     }
 }
