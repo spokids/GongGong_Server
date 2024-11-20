@@ -8,4 +8,5 @@ public interface UserRepository {
     User save(User user);
     Boolean existsByUserInputId(String userId);
     Optional<User> findByUserInputId(String userId);
+    void delete(User user);
 }
