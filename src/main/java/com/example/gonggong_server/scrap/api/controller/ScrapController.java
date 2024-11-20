@@ -1,4 +1,4 @@
-package com.example.gonggong_server.scrap.api;
+package com.example.gonggong_server.scrap.api.controller;
 
 import com.example.gonggong_server.global.response.ApiResponse;
 import com.example.gonggong_server.global.status.SuccessStatus;
