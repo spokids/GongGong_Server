@@ -31,6 +31,7 @@ public class ScrapService {
     @Transactional
     public void scrapProgram(String userInputId, Long programId) {
         User user = findUserById(userInputId);
+        Program program = findProgramById(programId);
 
         // 이미 스크랩한 프로그램인지 확인
         validateAlreadyScrapped(programId, user);
@@ -38,9 +39,15 @@ public class ScrapService {
         Scrap scrap = Scrap.builder()
                 .userId(user.getUserId())
                 .programId(programId)
+                .programType(program.getType())
                 .build();
 
         scrapRepository.save(scrap);
+    }
+
+    private Program findProgramById(Long programId) {
+        return programRepository.findByProgramId(programId)
+                .orElseThrow(() -> new ProgramException(ErrorStatus.PROGRAM_NOT_EXIST));
     }
 
     private void validateAlreadyScrapped(Long programId, User user) {
@@ -78,8 +85,7 @@ public class ScrapService {
     private List<ScrapListResponseDTO.ScrapProgramDTO> convertScrapsToDTOs(List<Scrap> scraps) {
         return scraps.stream()
                 .map(scrap -> {
-                    Program program = programRepository.findByProgramId(scrap.getProgramId())
-                            .orElseThrow(() -> new ProgramException(ErrorStatus.PROGRAM_NOT_EXIST));
+                    Program program = findProgramById(scrap.getProgramId());
 
                     return ScrapListResponseDTO.ScrapProgramDTO.of(
                             program.getProgramId(),

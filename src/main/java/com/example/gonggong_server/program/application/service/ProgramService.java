@@ -104,15 +104,7 @@ public class ProgramService {
 
     private List<ProgramListResponseDTO.ProgramDTO> mapProgramsToDTOs(Page<Program> programs) {
         return programs.stream()
-                .map(program -> ProgramListResponseDTO.ProgramDTO.of(
-                        program.getProgramId(),
-                        program.getProgramName(),
-                        program.getFacultyName(),
-                        program.getStartAge(),
-                        program.getEndAge(),
-                        program.getProgramStartDate(),
-                        program.getProgramEndDate()
-                ))
+                .map(ProgramListResponseDTO.ProgramDTO::of)
                 .collect(Collectors.toList());
     }
 
@@ -176,5 +168,30 @@ public class ProgramService {
     private Program findProgramById(Long programId) {
         return programRepository.findByProgramId(programId)
                 .orElseThrow(() -> new ProgramException(ErrorStatus.PROGRAM_NOT_EXIST));
+    }
+
+    /**
+     * 스크랩이 가장 많은 상위 3개 프로그램 타입 조회
+     * @return
+     */
+    public List<String> getTop3Types() {
+        return scrapRepository.findTop3Types();
+    }
+
+    /**
+     * 리뷰가 있는 프로그램 목록 최신순 조회
+     * @param pageSize
+     * @param pageIndex
+     * @return
+     */
+    public ProgramListResponseDTO getReviewedPrograms(int pageSize, int pageIndex) {
+        Pageable pageable = PageRequest.of(pageIndex - 1, pageSize);
+
+        // 리뷰가 있는 프로그램 목록 최신순 조회
+        Page<Program> programsPage = reviewRepository.findReviewedPrograms(pageable);
+
+        List<ProgramListResponseDTO.ProgramDTO> programList = mapProgramsToDTOs(programsPage);
+
+        return ProgramListResponseDTO.of(programList, programsPage.getTotalPages(), programsPage.getNumber() + 1);
     }
 }

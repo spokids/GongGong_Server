@@ -1,5 +1,6 @@
 package com.example.gonggong_server.program.application.response;
 
+import com.example.gonggong_server.program.domain.entity.Program;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -33,25 +34,38 @@ public class ProgramListResponseDTO {
                 .build();
     }
 
+    public static ProgramListResponseDTO of(
+            List<ProgramDTO> programList,
+            int totalPage,
+            int currentPage
+    ) {
+        return ProgramListResponseDTO.builder()
+                .programList(programList)
+                .totalPage(totalPage)
+                .currentPage(currentPage)
+                .build();
+    }
+
     @Getter
     @Builder
     @NoArgsConstructor
     @AllArgsConstructor
     public static class ProgramDTO {
         private Long programId;
+        private String programType;
         private String programName;
         private String facilityName;
         private String programAge;
         private String programDate;
 
-        public static ProgramDTO of(Long programId, String programName, String facilityName,
-                                    int startAge, int endAge, LocalDate startDate, LocalDate endDate) {
+        public static ProgramDTO of(Program program) {
             return ProgramDTO.builder()
-                    .programId(programId)
-                    .programName(programName)
-                    .facilityName(facilityName)
-                    .programAge(formatProgramAge(startAge, endAge))
-                    .programDate(formatProgramDate(startDate, endDate))
+                    .programId(program.getProgramId())
+                    .programType(program.getType())
+                    .programName(program.getProgramName())
+                    .facilityName(program.getFacultyName())
+                    .programAge(formatProgramAge(program.getStartAge(), program.getEndAge()))
+                    .programDate(formatProgramDate(program.getProgramStartDate(), program.getProgramEndDate()))
                     .build();
         }
 

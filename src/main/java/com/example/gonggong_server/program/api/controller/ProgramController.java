@@ -13,6 +13,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/program")
@@ -53,6 +55,21 @@ public class ProgramController {
             @PathVariable Long programId
     ) {
         ProgramDetailResponseDTO response = programService.getProgramDetail(programId, token);
+        return ApiResponse.success(SuccessStatus.OK, response);
+    }
+
+    @GetMapping("/top3")
+    public ResponseEntity<ApiResponse<List<String>>> getTop3Types() {
+        List<String> response = programService.getTop3Types();
+        return ApiResponse.success(SuccessStatus.OK, response);
+    }
+
+    @GetMapping("/reviewed")
+    public ResponseEntity<ApiResponse<ProgramListResponseDTO>> getReviewedPrograms(
+            @RequestParam(value = "size", defaultValue = "10") int size,
+            @RequestParam(value = "page", defaultValue = "1") int page
+    ) {
+        ProgramListResponseDTO response = programService.getReviewedPrograms(size, page);
         return ApiResponse.success(SuccessStatus.OK, response);
     }
 
