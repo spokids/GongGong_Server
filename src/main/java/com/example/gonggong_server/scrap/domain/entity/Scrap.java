@@ -24,6 +24,7 @@ public class Scrap {
     private Long userId;
     @NotNull
     private Long programId;
+    private String programType;
 
     @CreatedDate
     @Column(updatable = false)
