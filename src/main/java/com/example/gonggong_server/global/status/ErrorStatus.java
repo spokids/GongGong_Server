@@ -29,12 +29,14 @@ public enum ErrorStatus {
     USER_NOT_FOUND(HttpStatus.NOT_FOUND, "유저가 존재하지 않습니다."),
     NO_PROGRAMS_FOUND(HttpStatus.NOT_FOUND, "조건에 맞는 프로그램이 존재하지 않습니다."),
     PROGRAM_NOT_EXIST(HttpStatus.NOT_FOUND, "프로그램이 존재하지 않습니다"),
+    REVIEW_NOT_EXIST(HttpStatus.NOT_FOUND, "리뷰가 존재하지 않습니다"),
 
     // 405
     METHOD_NOT_ALLOWED(HttpStatus.METHOD_NOT_ALLOWED, "Method Not Allowed"),
 
     //409
     USER_ALREADY_EXISTS(HttpStatus.CONFLICT, "이미 존재하는 유저입니다"),
+    UNAUTHORIZED_REVIEW_ACCESS(HttpStatus.CONFLICT, "유저의 리뷰가 아닙니다"),
 
     // 500
     INTERNAL_SERVER_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, "서버 내부에서 오류가 발생했습니다.");
