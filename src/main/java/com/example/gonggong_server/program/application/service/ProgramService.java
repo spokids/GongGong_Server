@@ -177,4 +177,12 @@ public class ProgramService {
         return programRepository.findByProgramId(programId)
                 .orElseThrow(() -> new ProgramException(ErrorStatus.PROGRAM_NOT_EXIST));
     }
+
+    /**
+     * 스크랩이 가장 많은 상위 3개 프로그램 타입 조회
+     * @return
+     */
+    public List<String> getTop3Types() {
+        return scrapRepository.findTop3Types();
+    }
 }
