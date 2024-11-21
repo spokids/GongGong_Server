@@ -104,15 +104,7 @@ public class ProgramService {
 
     private List<ProgramListResponseDTO.ProgramDTO> mapProgramsToDTOs(Page<Program> programs) {
         return programs.stream()
-                .map(program -> ProgramListResponseDTO.ProgramDTO.of(
-                        program.getProgramId(),
-                        program.getProgramName(),
-                        program.getFacultyName(),
-                        program.getStartAge(),
-                        program.getEndAge(),
-                        program.getProgramStartDate(),
-                        program.getProgramEndDate()
-                ))
+                .map(ProgramListResponseDTO.ProgramDTO::of)
                 .collect(Collectors.toList());
     }
 
