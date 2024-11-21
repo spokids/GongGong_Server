@@ -18,14 +18,16 @@ public class MyReviewListResponseDTO {
     private String nickName;
     private String userInputId;
     private List<MyReviewDTO> reviews;
+    private int totalReviewCount;
     private int totalPage;
     private int currentPage;
 
-    public static MyReviewListResponseDTO of(String nickName, String userInputId, List<MyReviewDTO> reviews, int totalPage, int currentPage){
+    public static MyReviewListResponseDTO of(String nickName, String userInputId, List<MyReviewDTO> reviews, int totalReviewCount, int totalPage, int currentPage){
         return MyReviewListResponseDTO.builder()
                 .nickName(nickName)
                 .reviews(reviews)
                 .userInputId(userInputId)
+                .totalReviewCount(reviews.size())
                 .totalPage(totalPage)
                 .currentPage(currentPage)
                 .build();

@@ -91,7 +91,7 @@ public class ReviewService {
 
         List<MyReviewListResponseDTO.MyReviewDTO> reviews = getMyReviewDTOS(reviewsPage);
 
-        return MyReviewListResponseDTO.of(user.getNickName(), userInputId, reviews, reviewsPage.getTotalPages(),
+        return MyReviewListResponseDTO.of(user.getNickName(), userInputId, reviews, reviews.size(),reviewsPage.getTotalPages(),
                 reviewsPage.getNumber()+1
         );
     }
