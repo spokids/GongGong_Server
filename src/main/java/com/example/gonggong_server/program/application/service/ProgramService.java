@@ -177,4 +177,21 @@ public class ProgramService {
     public List<String> getTop3Types() {
         return scrapRepository.findTop3Types();
     }
+
+    /**
+     * 리뷰가 있는 프로그램 목록 최신순 조회
+     * @param pageSize
+     * @param pageIndex
+     * @return
+     */
+    public ProgramListResponseDTO getReviewedPrograms(int pageSize, int pageIndex) {
+        Pageable pageable = PageRequest.of(pageIndex - 1, pageSize);
+
+        // 리뷰가 있는 프로그램 목록 최신순 조회
+        Page<Program> programsPage = reviewRepository.findReviewedPrograms(pageable);
+
+        List<ProgramListResponseDTO.ProgramDTO> programList = mapProgramsToDTOs(programsPage);
+
+        return ProgramListResponseDTO.of(programList, programsPage.getTotalPages(), programsPage.getNumber() + 1);
+    }
 }

@@ -64,4 +64,13 @@ public class ProgramController {
         return ApiResponse.success(SuccessStatus.OK, response);
     }
 
+    @GetMapping("/reviewed")
+    public ResponseEntity<ApiResponse<ProgramListResponseDTO>> getReviewedPrograms(
+            @RequestParam(value = "size", defaultValue = "10") int size,
+            @RequestParam(value = "page", defaultValue = "1") int page
+    ) {
+        ProgramListResponseDTO response = programService.getReviewedPrograms(size, page);
+        return ApiResponse.success(SuccessStatus.OK, response);
+    }
+
 }

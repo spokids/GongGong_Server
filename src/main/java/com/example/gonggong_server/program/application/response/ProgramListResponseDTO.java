@@ -34,12 +34,25 @@ public class ProgramListResponseDTO {
                 .build();
     }
 
+    public static ProgramListResponseDTO of(
+            List<ProgramDTO> programList,
+            int totalPage,
+            int currentPage
+    ) {
+        return ProgramListResponseDTO.builder()
+                .programList(programList)
+                .totalPage(totalPage)
+                .currentPage(currentPage)
+                .build();
+    }
+
     @Getter
     @Builder
     @NoArgsConstructor
     @AllArgsConstructor
     public static class ProgramDTO {
         private Long programId;
+        private String programType;
         private String programName;
         private String facilityName;
         private String programAge;
@@ -48,6 +61,7 @@ public class ProgramListResponseDTO {
         public static ProgramDTO of(Program program) {
             return ProgramDTO.builder()
                     .programId(program.getProgramId())
+                    .programType(program.getType())
                     .programName(program.getProgramName())
                     .facilityName(program.getFacultyName())
                     .programAge(formatProgramAge(program.getStartAge(), program.getEndAge()))
