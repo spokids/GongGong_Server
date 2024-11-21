@@ -46,10 +46,4 @@ public class ProgramController {
         return ApiResponse.success(SuccessStatus.OK, response);
     }
 
-    @GetMapping("/test")
-    public ResponseEntity<ApiResponse<String>> test(
-            @AuthenticationPrincipal String userInputId
-    ) {
-        return ApiResponse.success(SuccessStatus.OK, "회원 아이디 : " + userInputId);
-    }
 }
