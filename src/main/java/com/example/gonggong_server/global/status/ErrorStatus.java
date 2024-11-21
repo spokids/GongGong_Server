@@ -14,6 +14,7 @@ public enum ErrorStatus {
     INVALID_SIGUNGU(HttpStatus.BAD_REQUEST, "잘못된 시/군/구 요청입니다."),
     ALREADY_SCRAPPED(HttpStatus.BAD_REQUEST, "이미 스크랩한 프로그램입니다."),
     NOT_SCRAPPED(HttpStatus.BAD_REQUEST, "스크랩하지 않은 프로그램입니다."),
+    OVER_REVIEW_CONTENT_LENGTH(HttpStatus.BAD_REQUEST, "리뷰 내용은 300자 이하로 작성해주세요."),
 
     // 401
     UNAUTHORIZED(HttpStatus.UNAUTHORIZED, "Unauthorized"),

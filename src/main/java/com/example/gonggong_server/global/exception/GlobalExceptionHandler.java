@@ -4,6 +4,7 @@ import com.example.gonggong_server.auth.exception.AuthException;
 import com.example.gonggong_server.global.response.ApiResponse;
 import com.example.gonggong_server.global.status.ErrorStatus;
 import com.example.gonggong_server.program.exception.ProgramException;
+import com.example.gonggong_server.review.exception.ReviewException;
 import com.example.gonggong_server.scrap.exception.ScrapException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.support.DefaultMessageSourceResolvable;
@@ -123,6 +124,13 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
     @ExceptionHandler(ScrapException.class)
     public ResponseEntity<ApiResponse<Void>> handleScrapException(ScrapException e) {
         log.warn(">>>>>>>>ScrapException: {}", e.getErrorStatus().getMessage());
+        return ApiResponse.error(e.getErrorStatus());
+    }
+
+    // ReviewException 처리
+    @ExceptionHandler(ReviewException.class)
+    public ResponseEntity<ApiResponse<Void>> handleReviewException(ReviewException e) {
+        log.warn(">>>>>>>>ReviewException: {}", e.getErrorStatus().getMessage());
         return ApiResponse.error(e.getErrorStatus());
     }
 

@@ -25,7 +25,8 @@ public class Review {
     @NotNull
     private Long programId;
 
-    @Lob
+    @NotNull
+    @Column(length = 300)
     private String content;
     private String imageUrl;
 
@@ -35,4 +36,13 @@ public class Review {
     @LastModifiedDate
     private LocalDateTime modifyDate;
 
+    @Builder
+    public static Review from(Long userId, Long programId, String content, String imageUrl) {
+        return Review.builder()
+                .userId(userId)
+                .programId(programId)
+                .content(content)
+                .imageUrl(imageUrl)
+                .build();
+    }
 }
