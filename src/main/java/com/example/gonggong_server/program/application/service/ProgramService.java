@@ -1,13 +1,21 @@
 package com.example.gonggong_server.program.application.service;
 
+import com.example.gonggong_server.auth.exception.AuthException;
+import com.example.gonggong_server.global.jwt.JWTUtil;
 import com.example.gonggong_server.global.status.ErrorStatus;
 import com.example.gonggong_server.program.api.request.ProgramListRequestDTO;
 import com.example.gonggong_server.program.application.response.DongResponseDTO;
+import com.example.gonggong_server.program.application.response.ProgramDetailResponseDTO;
 import com.example.gonggong_server.program.application.response.ProgramListResponseDTO;
 import com.example.gonggong_server.program.application.response.SigunguResponseDTO;
 import com.example.gonggong_server.program.domain.entity.Program;
 import com.example.gonggong_server.program.domain.repository.ProgramRepository;
 import com.example.gonggong_server.program.exception.ProgramException;
+import com.example.gonggong_server.review.domain.entity.Review;
+import com.example.gonggong_server.review.domain.repository.ReviewRepository;
+import com.example.gonggong_server.scrap.domain.repository.ScrapRepository;
+import com.example.gonggong_server.user.domain.entity.User;
+import com.example.gonggong_server.user.domain.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -23,7 +31,16 @@ import java.util.stream.Collectors;
 public class ProgramService {
 
     private final ProgramRepository programRepository;
+    private final ReviewRepository reviewRepository;
+    private final UserRepository userRepository;
+    private final ScrapRepository scrapRepository;
+    private final JWTUtil jwtUtil;
 
+    /**
+     * 도/특별시에 해당하는 시군구 정보 조회
+     * @param province
+     * @return
+     */
     public SigunguResponseDTO getSigunguList(String province) {
         List<String> districtNames = programRepository.findSigunguByProvince(province);
 
@@ -54,6 +71,13 @@ public class ProgramService {
         }
     }
 
+    /**
+     * 조건에 맞는 프로그램 목록 조회
+     * @param pageSize
+     * @param pageIndex
+     * @param request
+     * @return
+     */
     public ProgramListResponseDTO getProgramList(int pageSize, int pageIndex, ProgramListRequestDTO request) {
         Pageable pageable = PageRequest.of(pageIndex - 1, pageSize);
 
@@ -121,5 +145,36 @@ public class ProgramService {
         return requestedTypes.stream()
                 .filter(type -> !existingTypes.contains(type))
                 .collect(Collectors.toList());
+    }
+
+
+    /**
+     * 프로그램 상세 조회
+     * @param programId
+     * @return
+     */
+    public ProgramDetailResponseDTO getProgramDetail(Long programId, String token) {
+        Program program = findProgramById(programId);
+        List<Review> reviews = reviewRepository.findAllByProgramId(programId);
+
+        // 사용자가 스크랩한 프로그램인지 확인
+        Boolean isScrapped = false;
+        if (token != null) {
+            String userInputId = jwtUtil.getUserInputId(token.split(" ")[1]);
+            User user = findUserById(userInputId);
+            isScrapped = scrapRepository.existsByUserIdAndProgramId(user.getUserId(), programId);
+        }
+
+        return ProgramDetailResponseDTO.of(program, reviews.size(), isScrapped);
+    }
+
+    private User findUserById(String userInputId) {
+        return userRepository.findByUserInputId(userInputId)
+                .orElseThrow(() -> new AuthException(ErrorStatus.UNAUTHORIZED));
+    }
+
+    private Program findProgramById(Long programId) {
+        return programRepository.findByProgramId(programId)
+                .orElseThrow(() -> new ProgramException(ErrorStatus.PROGRAM_NOT_EXIST));
     }
 }

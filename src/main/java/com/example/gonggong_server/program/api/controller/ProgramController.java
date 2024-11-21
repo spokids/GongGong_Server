@@ -4,6 +4,7 @@ import com.example.gonggong_server.global.response.ApiResponse;
 import com.example.gonggong_server.global.status.SuccessStatus;
 import com.example.gonggong_server.program.api.request.ProgramListRequestDTO;
 import com.example.gonggong_server.program.application.response.DongResponseDTO;
+import com.example.gonggong_server.program.application.response.ProgramDetailResponseDTO;
 import com.example.gonggong_server.program.application.response.ProgramListResponseDTO;
 import com.example.gonggong_server.program.application.response.SigunguResponseDTO;
 import com.example.gonggong_server.program.application.service.ProgramService;
@@ -46,10 +47,13 @@ public class ProgramController {
         return ApiResponse.success(SuccessStatus.OK, response);
     }
 
-    @GetMapping("/test")
-    public ResponseEntity<ApiResponse<String>> test(
-            @AuthenticationPrincipal String userInputId
+    @GetMapping("/{programId}")
+    public ResponseEntity<ApiResponse<ProgramDetailResponseDTO>> getProgramDetail(
+            @RequestHeader(value = "Authorization", required = false) String token,
+            @PathVariable Long programId
     ) {
-        return ApiResponse.success(SuccessStatus.OK, "회원 아이디 : " + userInputId);
+        ProgramDetailResponseDTO response = programService.getProgramDetail(programId, token);
+        return ApiResponse.success(SuccessStatus.OK, response);
     }
+
 }
