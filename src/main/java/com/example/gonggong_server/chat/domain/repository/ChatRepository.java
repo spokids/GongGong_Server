@@ -11,5 +11,5 @@ public interface ChatRepository {
     List<Chat> findByChatRoomId(Long chatRoomId);
     List<Chat> findByChatRoomIdOrderByCreateDateAsc(Long chatRoomId);
 
-    void deleteAll(List<Chat> chatsToDelete);
+    void delete(Chat chat);
 }

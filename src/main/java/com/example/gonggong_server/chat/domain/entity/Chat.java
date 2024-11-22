@@ -37,5 +37,13 @@ public class Chat {
     @LastModifiedDate
     private LocalDateTime modifyDate;
 
-
+    public static Chat of(Long chatRoomId, Boolean author, String content, String currentCriteria) {
+        Chat chat = new Chat();
+        chat.chatRoomId = chatRoomId;
+        chat.author = author;
+        chat.content = content;
+        chat.currentCriteria = currentCriteria;
+        chat.createDate = LocalDateTime.now(); // 생성 시점
+        return chat;
+    }
 }
