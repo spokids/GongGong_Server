@@ -40,4 +40,12 @@ public interface JpaProgramRepository extends ProgramRepository, JpaRepository<P
             @Param("types") List<String> types,
             Pageable pageable
     );
+
+    @Query("SELECT p FROM Program p WHERE " +
+            "p.ability IN :abilities AND p.fullAddress LIKE %:region%")
+    Page<Program> findByAbilitiesAndAddress(
+            @Param("abilities") List<String> abilities,
+            @Param("region") String region,
+            Pageable pageable
+    );
 }

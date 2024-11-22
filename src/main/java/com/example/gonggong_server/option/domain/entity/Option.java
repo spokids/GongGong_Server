@@ -1,0 +1,34 @@
+package com.example.gonggong_server.option.domain.entity;
+
+import jakarta.persistence.*;
+import jakarta.validation.constraints.NotNull;
+import lombok.*;
+import org.springframework.data.annotation.CreatedDate;
+import org.springframework.data.annotation.LastModifiedDate;
+import org.springframework.data.jpa.domain.support.AuditingEntityListener;
+
+import java.time.LocalDateTime;
+
+@Getter
+@Entity
+@Builder
+@EntityListeners(AuditingEntityListener.class)
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
+@AllArgsConstructor
+public class Option {
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    Long optionId;
+
+    @NotNull
+    Long chatRoomId;
+
+    String ability;
+
+    @CreatedDate
+    @Column(updatable = false)
+    private LocalDateTime createDate;
+    @LastModifiedDate
+    private LocalDateTime modifyDate;
+}

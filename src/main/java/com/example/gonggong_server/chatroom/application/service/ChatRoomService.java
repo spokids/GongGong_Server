@@ -1,9 +1,10 @@
 package com.example.gonggong_server.chatroom.application.service;
 
 import com.example.gonggong_server.auth.exception.AuthException;
+import com.example.gonggong_server.chat.exception.ChatException;
 import com.example.gonggong_server.chatroom.api.request.ChatChoiceRequestDTO;
 import com.example.gonggong_server.chatroom.application.response.ChatRoomCreateResponseDTO;
-import com.example.gonggong_server.chatroom.application.response.DefaultMessageDTO;
+import com.example.gonggong_server.chat.application.response.ChatMessageDTO;
 import com.example.gonggong_server.chat.domain.entity.Chat;
 import com.example.gonggong_server.chat.domain.repository.ChatRepository;
 import com.example.gonggong_server.chat.domain.value.Choice;
@@ -43,7 +44,7 @@ public class ChatRoomService {
             chatRepository.save(chat);
         }
 
-        List<DefaultMessageDTO> messages = createDefaultMessages(initialChats, choice);
+        List<ChatMessageDTO> messages = createDefaultMessages(initialChats, choice);
 
         return new ChatRoomCreateResponseDTO(newChatRoom.getChatRoomId(), messages);
     }
@@ -80,14 +81,14 @@ public class ChatRoomService {
                             .build()
             );
         }
-        throw new IllegalArgumentException("Invalid choice type");
+        throw new ChatException(ErrorStatus.INVALID_CHOICE);
     }
 
-    private List<DefaultMessageDTO> createDefaultMessages(List<Chat> initialChats, Choice choice) {
+    private List<ChatMessageDTO> createDefaultMessages(List<Chat> initialChats, Choice choice) {
         if (choice == Choice.FREE_CHAT) {
             return List.of(
-                    new DefaultMessageDTO(initialChats.get(0).getContent(), null),
-                    new DefaultMessageDTO(initialChats.get(1).getContent(), null)
+                    new ChatMessageDTO(initialChats.get(0).getContent(), null),
+                    new ChatMessageDTO(initialChats.get(1).getContent(), null)
             );
         } else if (choice == Choice.ABILITY_CHAT) {
             List<String> options = List.of(
@@ -95,10 +96,10 @@ public class ChatRoomService {
                     "반응속도", "표현력", "균형감각", "집중력", "순발력", "정밀성"
             );
             return List.of(
-                    new DefaultMessageDTO(initialChats.get(0).getContent(), null),
-                    new DefaultMessageDTO(initialChats.get(1).getContent(), options)
+                    new ChatMessageDTO(initialChats.get(0).getContent(), null),
+                    new ChatMessageDTO(initialChats.get(1).getContent(), options)
             );
         }
-        throw new IllegalArgumentException("Invalid choice type");
+        throw new ChatException(ErrorStatus.INVALID_CHOICE);
     }
 }

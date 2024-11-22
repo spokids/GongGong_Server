@@ -13,4 +13,6 @@ public interface ProgramRepository {
     Page<Program> findPrograms(String province, String district, String dong, Integer age, List<String> types, Pageable pageable);
     Optional<Program> findByProgramId(Long programId);
     Page<Program> findProgramsByCriteria(int age, String location, String type, Pageable pageable);
+
+    Page<Program> findByAbilitiesAndAddress(List<String> abilityValues, String region, Pageable pageable);
 }
