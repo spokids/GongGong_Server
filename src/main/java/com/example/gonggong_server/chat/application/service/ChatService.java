@@ -1,9 +1,9 @@
 package com.example.gonggong_server.chat.application.service;
 
 import com.example.gonggong_server.auth.exception.AuthException;
-import com.example.gonggong_server.chat.application.response.RecommendProgramDTO;
 import com.example.gonggong_server.chat.api.request.ChatFreeRequestDTO;
 import com.example.gonggong_server.chat.application.response.ChatFreeResponseDTO;
+import com.example.gonggong_server.chat.application.response.RecommendProgramDTO;
 import com.example.gonggong_server.chat.domain.entity.Chat;
 import com.example.gonggong_server.chat.domain.repository.ChatRepository;
 import com.example.gonggong_server.global.status.ErrorStatus;
@@ -159,7 +159,7 @@ public class ChatService {
     }
 
     private ChatFreeResponseDTO buildSuccessResponse(Long chatRoomId, Map<String, String> currentCriteria, Page<Program> programsPage) {
-        String responseMessage = "추천 프로그램을 확인하세요!";
+        String responseMessage = "딱 맞을 만한 프로그램들을 찾아봤어요!";
 
         int totalPageCount = programsPage.getTotalPages();
         int currentPage = programsPage.getNumber() + 1;
@@ -178,6 +178,23 @@ public class ChatService {
                         program.getProgramEndDate()
                 ))
                 .toList();
+        // Chat 저장 (각 프로그램 개별 정보)
+        programsPage.forEach(program -> {
+            try {
+                String programJson = new ObjectMapper().writeValueAsString(new RecommendProgramDTO(
+                        program.getProgramId(),
+                        program.getProgramName(),
+                        program.getFacultyName(),
+                        program.getProgramTarget(),
+                        program.getProgramStartDate(),
+                        program.getProgramEndDate()
+                ));
+
+                saveChat(chatRoomId, true, programJson, currentCriteria);
+            } catch (JsonProcessingException e) {
+                throw new RuntimeException("프로그램 개별 정보 저장 실패", e);
+            }
+        });
 
         return ChatFreeResponseDTO.builder()
                 .isSuccess(true)
