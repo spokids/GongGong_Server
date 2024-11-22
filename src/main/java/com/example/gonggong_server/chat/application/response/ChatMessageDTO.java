@@ -1,6 +1,6 @@
-package com.example.gonggong_server.chatroom.application.response;
+package com.example.gonggong_server.chat.application.response;
 
 import java.util.List;
 
-public record DefaultMessageDTO(String message, List<String> options) {
+public record ChatMessageDTO(String message, List<String> options) {
 }
