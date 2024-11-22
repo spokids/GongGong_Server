@@ -3,6 +3,7 @@ package com.example.gonggong_server.review.api.controller;
 import com.example.gonggong_server.global.response.ApiResponse;
 import com.example.gonggong_server.global.status.SuccessStatus;
 import com.example.gonggong_server.review.api.request.ReviewRequestDTO;
+import com.example.gonggong_server.review.application.response.MyReviewListResponseDTO;
 import com.example.gonggong_server.review.application.response.ReviewListResponseDTO;
 import com.example.gonggong_server.review.application.response.ReviewResponseDTO;
 import com.example.gonggong_server.review.application.service.ReviewService;
@@ -40,5 +41,24 @@ public class ReviewController {
     ) {
         ReviewListResponseDTO response = reviewService.getReviews(programId);
         return ApiResponse.success(SuccessStatus.OK, response);
+    }
+
+    @GetMapping("/mypage")
+    public ResponseEntity<ApiResponse<MyReviewListResponseDTO>> getMyReviews(
+            @AuthenticationPrincipal String userInputId,
+            @RequestParam(value = "size", defaultValue = "5") int size,
+            @RequestParam(value = "page", defaultValue = "1") int page
+    ) {
+        MyReviewListResponseDTO response = reviewService.getMyReviews(userInputId,size, page);
+        return ApiResponse.success(SuccessStatus.OK, response);
+    }
+
+    @DeleteMapping("/mypage/{reviewId}")
+    public ResponseEntity<ApiResponse<String>> deleteMyReview(
+            @AuthenticationPrincipal String userInputId,
+            @PathVariable Long reviewId
+    ){
+        reviewService.deleteMyReview(userInputId,reviewId);
+        return ApiResponse.success(SuccessStatus.OK);
     }
 }
