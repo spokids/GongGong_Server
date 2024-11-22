@@ -12,19 +12,28 @@ import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/v1/chat/completions")
+@RequestMapping
 public class ChatController {
 
     private final ChatService chatService;
 
-    @PostMapping
+    @PostMapping("/v1/chat/completions")
     public ResponseEntity<ApiResponse<ChatFreeResponseDTO>> processChat(
             @AuthenticationPrincipal String userInputId,
             @RequestBody ChatFreeRequestDTO request,
             @RequestParam(value = "size", defaultValue = "2") int size,
             @RequestParam(value = "page", defaultValue = "1") int page
     ) {
-        ChatFreeResponseDTO response = chatService.handleUserInput(userInputId,request, size, page);
+        ChatFreeResponseDTO response = chatService.handleUserInput(request, size, page);
         return ApiResponse.success(SuccessStatus.OK, response);
+    }
+
+    @DeleteMapping("/chat/delete")
+    public ResponseEntity<ApiResponse<String>> deleteChat(
+            @AuthenticationPrincipal String userInputId,
+            @PathVariable Long chatRoomId
+    ) {
+        chatService.deleteChats(chatRoomId);
+        return ApiResponse.success(SuccessStatus.OK);
     }
 }

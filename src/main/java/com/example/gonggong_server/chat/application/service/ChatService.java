@@ -1,15 +1,13 @@
 package com.example.gonggong_server.chat.application.service;
 
-import com.example.gonggong_server.auth.exception.AuthException;
 import com.example.gonggong_server.chat.api.request.ChatFreeRequestDTO;
 import com.example.gonggong_server.chat.application.response.ChatFreeResponseDTO;
 import com.example.gonggong_server.chat.application.response.RecommendProgramDTO;
 import com.example.gonggong_server.chat.domain.entity.Chat;
 import com.example.gonggong_server.chat.domain.repository.ChatRepository;
-import com.example.gonggong_server.global.status.ErrorStatus;
+import com.example.gonggong_server.chatroom.domain.repository.ChatRoomRepository;
 import com.example.gonggong_server.program.domain.entity.Program;
 import com.example.gonggong_server.program.domain.repository.ProgramRepository;
-import com.example.gonggong_server.user.domain.entity.User;
 import com.example.gonggong_server.user.domain.repository.UserRepository;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
@@ -38,11 +36,10 @@ public class ChatService {
     private final ChatRepository chatRepository;
     private final UserRepository userRepository;
     private final ProgramRepository programRepository;
+    private final ChatRoomRepository chatRoomRepository;
 
-    public ChatFreeResponseDTO handleUserInput(String userInputId, ChatFreeRequestDTO chatFreeRequestDTO, int pageSize, int pageIndex) {
-        User user = userRepository.findByUserInputId(userInputId)
-                .orElseThrow(() -> new AuthException(ErrorStatus.USER_NOT_FOUND));
-        Long userId = user.getUserId();
+    public ChatFreeResponseDTO handleUserInput(ChatFreeRequestDTO chatFreeRequestDTO, int pageSize, int pageIndex) {
+
         Long chatRoomId = chatFreeRequestDTO.chatRoomId();
 
         // 이전 기준 가져오기
@@ -223,6 +220,18 @@ public class ChatService {
             throw new RuntimeException("currentCriteria 저장 실패", e);
         }
     }
+
+    public void deleteChats(Long chatRoomId) { //기본 2개 chat 빼고 삭제
+
+        List<Chat> chats = chatRepository.findByChatRoomIdOrderByCreateDateAsc(chatRoomId);
+
+        if (chats.size() > 2) {
+            List<Chat> chatsToDelete = chats.subList(2, chats.size());
+            chatRepository.deleteAll(chatsToDelete);
+        }
+    }
+
+
 }
 
 
