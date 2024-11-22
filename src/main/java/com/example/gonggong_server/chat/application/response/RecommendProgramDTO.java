@@ -1,4 +1,4 @@
-package com.example.gonggong_server.chatgpt.application.response;
+package com.example.gonggong_server.chat.application.response;
 
 import java.time.LocalDate;
 

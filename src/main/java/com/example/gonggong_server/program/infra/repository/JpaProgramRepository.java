@@ -15,9 +15,9 @@ public interface JpaProgramRepository extends ProgramRepository, JpaRepository<P
             "WHERE :age BETWEEN p.startAge AND p.endAge " +
             "AND p.fullAddress LIKE %:location% " +
             "AND p.type = :type")
-    List<Program> findProgramsByCriteria(@Param("age") int age,
+    Page<Program> findProgramsByCriteria(@Param("age") int age,
                                          @Param("location") String location,
-                                         @Param("type") String type);
+                                         @Param("type") String type, Pageable pageable);
 
     @Query("SELECT DISTINCT p.districtName FROM Program p WHERE p.provinceName = :province")
     List<String> findSigunguByProvince(@Param("province") String province);

@@ -28,6 +28,9 @@ public class Chat {
 
     private String content;
 
+    @Lob
+    private String currentCriteria;
+
     @CreatedDate
     @Column(updatable = false)
     private LocalDateTime createDate;
