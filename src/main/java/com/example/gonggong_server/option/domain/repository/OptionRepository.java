@@ -8,4 +8,6 @@ public interface OptionRepository {
     List<Option> findByChatRoomId(Long chatId);
     Option save(Option option);
 
+    void delete(Option option);
+
 }

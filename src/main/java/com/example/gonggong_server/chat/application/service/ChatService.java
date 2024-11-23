@@ -41,6 +41,10 @@ public class ChatService {
         for (Chat chat : chats) {
             chatRepository.delete(chat);
         }
+        List<Option> options = optionRepository.findByChatRoomId(chatRoomId);
+        for(Option option:options){
+            optionRepository.delete(option);
+        }
     }
 
     public ChatListResponseDTO getChats(String userInputId, int pageSize, int pageIndex) {
