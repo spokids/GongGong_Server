@@ -28,7 +28,7 @@ public class ChatController {
     public ResponseEntity<ApiResponse<ChatFreeResponseDTO>> processFreeChat(
             @AuthenticationPrincipal String userInputId,
             @RequestBody ChatFreeRequestDTO request,
-            @RequestParam(value = "size", defaultValue = "2") int size,
+            @RequestParam(value = "size", defaultValue = "3") int size,
             @RequestParam(value = "page", defaultValue = "1") int page
     ) {
         ChatFreeResponseDTO response = chatFreeService.handleUserInput(request, size, page);
@@ -47,7 +47,7 @@ public class ChatController {
     @GetMapping("/chat")
     public ResponseEntity<ApiResponse<ChatListResponseDTO>> getChatList(
             @AuthenticationPrincipal String userInputId,
-            @RequestParam(value = "size", defaultValue = "2") int size,
+            @RequestParam(value = "size", defaultValue = "3") int size,
             @RequestParam(value = "page", defaultValue = "1") int page
 
     ) {
@@ -59,7 +59,7 @@ public class ChatController {
     public ResponseEntity<ApiResponse<ChatAbilityResponseDTO>> processAbilityChat(
             @AuthenticationPrincipal String userInputId,
             @RequestBody ChatAbilityRequestDTO request,
-            @RequestParam(value = "size", defaultValue = "2") int size,
+            @RequestParam(value = "size", defaultValue = "3") int size,
             @RequestParam(value = "page", defaultValue = "1") int page
     ) {
         ChatAbilityResponseDTO response = chatAbilityService.processAbilitiesAndRegion(request, size, page);
