@@ -3,7 +3,11 @@ package com.example.gonggong_server.review.application.service;
 import com.example.gonggong_server.global.exception.GlobalException;
 import com.example.gonggong_server.global.status.ErrorStatus;
 import com.example.gonggong_server.global.util.S3Util;
+import com.example.gonggong_server.program.domain.entity.Program;
+import com.example.gonggong_server.program.domain.repository.ProgramRepository;
+import com.example.gonggong_server.program.exception.ProgramException;
 import com.example.gonggong_server.review.api.request.ReviewRequestDTO;
+import com.example.gonggong_server.review.application.response.MyReviewListResponseDTO;
 import com.example.gonggong_server.review.application.response.ReviewListResponseDTO;
 import com.example.gonggong_server.review.application.response.ReviewResponseDTO;
 import com.example.gonggong_server.review.domain.entity.Review;
@@ -31,6 +35,7 @@ import java.util.stream.Collectors;
 public class ReviewService {
 
     private final ReviewRepository reviewRepository;
+    private final ProgramRepository programRepository;
     private final UserRepository userRepository;
     private final S3Util s3Util;
 
@@ -82,5 +87,46 @@ public class ReviewService {
                 .map(review -> ReviewListResponseDTO.ReviewDTO.of(review, userNicknames)).toList();
 
         return ReviewListResponseDTO.of(reviewDTOs, hasNext);
+    }
+    public MyReviewListResponseDTO getMyReviews(String userInputId, int pageSize, int pageIndex){
+        User user = findUserById(userInputId);
+        Pageable pageable = PageRequest.of(pageIndex - 1, pageSize);
+        Long userId = user.getUserId();
+
+        Page<Review> reviewsPage = reviewRepository.findReviews(userId, pageable);
+
+        List<MyReviewListResponseDTO.MyReviewDTO> reviews = getMyReviewDTOS(reviewsPage);
+
+        return MyReviewListResponseDTO.of(user.getNickName(), userInputId, reviews, reviews.size(),reviewsPage.getTotalPages(),
+                reviewsPage.getNumber()+1
+        );
+    }
+
+    private List<MyReviewListResponseDTO.MyReviewDTO> getMyReviewDTOS(Page<Review> reviewsPage) {
+        List<MyReviewListResponseDTO.MyReviewDTO> reviews = reviewsPage.stream().map(
+                review -> {
+                    Program program = programRepository.findByProgramId(review.getProgramId())
+                            .orElseThrow(()-> new ProgramException(ErrorStatus.PROGRAM_NOT_EXIST));
+                    return MyReviewListResponseDTO.MyReviewDTO.of(review, program);
+                })
+                .toList();
+        return reviews;
+    }
+
+    public void deleteMyReview(String userInputId, Long reviewId){
+        User user = findUserById(userInputId);
+        Review review = getValidatedReview(reviewId, user);
+        reviewRepository.delete(review);
+    }
+
+    private Review getValidatedReview(Long reviewId, User user) {
+        Review review = reviewRepository.findByReviewId(reviewId)
+                .orElseThrow(() -> new ReviewException(ErrorStatus.REVIEW_NOT_EXIST));
+
+        if (!review.getUserId().equals(user.getUserId())) {
+            throw new ReviewException(ErrorStatus.UNAUTHORIZED_REVIEW_ACCESS);
+        }
+
+        return review;
     }
 }
