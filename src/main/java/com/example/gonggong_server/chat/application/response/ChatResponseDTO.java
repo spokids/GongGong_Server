@@ -44,6 +44,7 @@ public class ChatResponseDTO {
     @AllArgsConstructor
     public static class RecommendProgramDTO{
         Long programId;
+        String programType;
         String programName;
         String facultyName;
         String programTarget;
@@ -53,6 +54,7 @@ public class ChatResponseDTO {
         ){
             return RecommendProgramDTO.builder()
                     .programId(program.getProgramId())
+                    .programType(program.getType())
                     .programName(program.getProgramName())
                     .facultyName(program.getFacultyName())
                     .programTarget(formatProgramAge(program.getStartAge(), program.getEndAge()))
