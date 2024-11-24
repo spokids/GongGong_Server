@@ -4,7 +4,7 @@ import java.util.List;
 
 public record ChatListResponseDTO(
         List<String> chats,
-        List<RecommendProgramDTO> programs,
+        List<ChatResponseDTO.RecommendProgramDTO> programs,
         List<String> options,
         int totalProgramPages,
         int currentProgramPage

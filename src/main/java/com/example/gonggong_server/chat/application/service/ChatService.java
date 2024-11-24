@@ -2,7 +2,7 @@ package com.example.gonggong_server.chat.application.service;
 
 import com.example.gonggong_server.auth.exception.AuthException;
 import com.example.gonggong_server.chat.application.response.ChatListResponseDTO;
-import com.example.gonggong_server.chat.application.response.RecommendProgramDTO;
+import com.example.gonggong_server.chat.application.response.ChatResponseDTO;
 import com.example.gonggong_server.chat.domain.entity.Chat;
 import com.example.gonggong_server.chat.domain.repository.ChatRepository;
 import com.example.gonggong_server.chat.exception.ChatException;
@@ -78,7 +78,7 @@ public class ChatService {
 
         // 프로그램 Chats를 페이징 처리
         Pageable pageable = PageRequest.of(pageIndex - 1, pageSize);
-        List<RecommendProgramDTO> programDTOs = programChats.stream()
+        List<ChatResponseDTO.RecommendProgramDTO> programDTOs = programChats.stream()
                 .skip((long) pageable.getPageNumber() * pageable.getPageSize())
                 .limit(pageable.getPageSize())
                 .map(chat -> parseRecommendProgramFromChat(chat.getContent(), objectMapper)) // 바로 RecommendProgramDTO로 변환
@@ -93,16 +93,16 @@ public class ChatService {
 
     private boolean isProgramChat(String content, ObjectMapper objectMapper) {
         try {
-            objectMapper.readValue(content, RecommendProgramDTO.class); // RecommendProgramDTO로 바로 검증
+            objectMapper.readValue(content, ChatResponseDTO.RecommendProgramDTO.class); // RecommendProgramDTO로 바로 검증
             return true;
         } catch (JsonProcessingException e) {
             return false;
         }
     }
 
-    private RecommendProgramDTO parseRecommendProgramFromChat(String content, ObjectMapper objectMapper) {
+    private ChatResponseDTO.RecommendProgramDTO parseRecommendProgramFromChat(String content, ObjectMapper objectMapper) {
         try {
-            return objectMapper.readValue(content, RecommendProgramDTO.class); // 바로 RecommendProgramDTO로 변환
+            return objectMapper.readValue(content, ChatResponseDTO.RecommendProgramDTO.class); // 바로 RecommendProgramDTO로 변환
         } catch (JsonProcessingException e) {
             return null;
         }

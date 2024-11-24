@@ -1,8 +1,7 @@
 package com.example.gonggong_server.chat.application.service;
 
 import com.example.gonggong_server.chat.api.request.ChatAbilityRequestDTO;
-import com.example.gonggong_server.chat.application.response.ChatAbilityResponseDTO;
-import com.example.gonggong_server.chat.application.response.RecommendProgramDTO;
+import com.example.gonggong_server.chat.application.response.ChatResponseDTO;
 import com.example.gonggong_server.chat.domain.entity.Chat;
 import com.example.gonggong_server.chat.domain.repository.ChatRepository;
 import com.example.gonggong_server.chat.exception.ChatException;
@@ -31,9 +30,9 @@ public class ChatAbilityService {
     private final OptionRepository optionRepository;
     private final ProgramRepository programRepository;
 
-    public ChatAbilityResponseDTO processAbilitiesAndRegion(ChatAbilityRequestDTO requestDTO, int pageSize, int pageIndex) {
+    public ChatResponseDTO processAbilitiesAndRegion(ChatAbilityRequestDTO requestDTO, int pageSize, int pageIndex) {
         Long chatRoomId = requestDTO.chatRoomId();
-        List<RecommendProgramDTO> programs = new ArrayList<>();
+        List<ChatResponseDTO.RecommendProgramDTO> programs = new ArrayList<>();
 
         if (requestDTO.abilities() != null && !requestDTO.abilities().isEmpty()) {
             saveAbilityChats(chatRoomId, requestDTO.abilities());
@@ -41,7 +40,7 @@ public class ChatAbilityService {
             String responseMessage = "마지막으로, 보다 알맞은 추천을 위해\n 아이가 사는 지역을 알려주세요.";
             saveResponseMessageChat(chatRoomId, true, responseMessage);
 
-            return new ChatAbilityResponseDTO(
+            return new ChatResponseDTO(
                     false,
                     responseMessage,
                     programs,
@@ -52,11 +51,11 @@ public class ChatAbilityService {
 
         if (requestDTO.region() != null && !requestDTO.region().isBlank()) {
             Pageable pageable = PageRequest.of(pageIndex - 1, pageSize);
-            Page<RecommendProgramDTO> programPage = findPrograms(chatRoomId, requestDTO.region(), pageable);
+            Page<ChatResponseDTO.RecommendProgramDTO> programPage = findPrograms(chatRoomId, requestDTO.region(), pageable);
 
             saveProgramsAsChats(chatRoomId, programPage.getContent());
 
-            return new ChatAbilityResponseDTO(
+            return new ChatResponseDTO(
                     true,
                     "추천 프로그램을 확인하세요!",
                     programPage.getContent(),
@@ -84,7 +83,7 @@ public class ChatAbilityService {
                 .toList());
         saveResponseMessageChat(chatRoomId, false, abilityMessage);
     }
-    private Page<RecommendProgramDTO> findPrograms(Long chatRoomId, String region, Pageable pageable) {
+    private Page<ChatResponseDTO.RecommendProgramDTO> findPrograms(Long chatRoomId, String region, Pageable pageable) {
         // Option 기준 가져오기
         List<String> abilityValues = optionRepository.findByChatRoomId(chatRoomId).stream()
                 .map(Option::getAbility)
@@ -93,17 +92,10 @@ public class ChatAbilityService {
         // 지역 기준과 능력치 기준으로 프로그램 검색 (페이징 적용)
         Page<Program> programs = programRepository.findByAbilitiesAndAddress(abilityValues, region, pageable);
 
-        return programs.map(program -> new RecommendProgramDTO(
-                program.getProgramId(),
-                program.getProgramName(),
-                program.getFacultyName(),
-                program.getProgramTarget(),
-                program.getProgramStartDate(),
-                program.getProgramEndDate()
-        ));
+        return programs.map(program -> ChatResponseDTO.RecommendProgramDTO.of(program));
     }
 
-    private void saveProgramsAsChats(Long chatRoomId, List<RecommendProgramDTO> programs) {
+    private void saveProgramsAsChats(Long chatRoomId, List<ChatResponseDTO.RecommendProgramDTO> programs) {
         programs.forEach(program -> {
             try {
                 // 프로그램 정보를 JSON 형식으로 변환

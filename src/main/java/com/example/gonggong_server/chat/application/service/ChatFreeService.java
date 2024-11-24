@@ -1,8 +1,7 @@
 package com.example.gonggong_server.chat.application.service;
 
 import com.example.gonggong_server.chat.api.request.ChatFreeRequestDTO;
-import com.example.gonggong_server.chat.application.response.ChatFreeResponseDTO;
-import com.example.gonggong_server.chat.application.response.RecommendProgramDTO;
+import com.example.gonggong_server.chat.application.response.ChatResponseDTO;
 import com.example.gonggong_server.chat.domain.entity.Chat;
 import com.example.gonggong_server.chat.domain.repository.ChatRepository;
 import com.example.gonggong_server.chat.exception.ChatException;
@@ -35,7 +34,7 @@ public class ChatFreeService {
     private final ChatgptService chatgptService;
     private final ChatRepository chatRepository;
     private final ProgramRepository programRepository;
-    public ChatFreeResponseDTO handleUserInput(ChatFreeRequestDTO chatFreeRequestDTO, int pageSize, int pageIndex) {
+    public ChatResponseDTO handleUserInput(ChatFreeRequestDTO chatFreeRequestDTO, int pageSize, int pageIndex) {
 
         Long chatRoomId = chatFreeRequestDTO.chatRoomId();
 
@@ -137,20 +136,20 @@ public class ChatFreeService {
         }
     }
 
-    private ChatFreeResponseDTO buildFailureResponse(Long chatRoomId, Map<String, String> currentCriteria, List<String> missingFields) {
+    private ChatResponseDTO buildFailureResponse(Long chatRoomId, Map<String, String> currentCriteria, List<String> missingFields) {
 
         String responseMessage = String.join("와(과) ", missingFields) + "을(를) 입력해주세요.";
 
         saveChat(chatRoomId, true, responseMessage, currentCriteria);
 
-        return ChatFreeResponseDTO.builder()
+        return ChatResponseDTO.builder()
                 .isSuccess(false)
                 .responseMessage(responseMessage)
                 .programs(null)
                 .build();
     }
 
-    private ChatFreeResponseDTO buildSuccessResponse(Long chatRoomId, Map<String, String> currentCriteria, Page<Program> programsPage) {
+    private ChatResponseDTO buildSuccessResponse(Long chatRoomId, Map<String, String> currentCriteria, Page<Program> programsPage) {
         String responseMessage = "딱 맞을 만한 프로그램들을 찾아봤어요!";
 
         int totalPageCount = programsPage.getTotalPages();
@@ -160,27 +159,13 @@ public class ChatFreeService {
         saveChat(chatRoomId, true, responseMessage, currentCriteria);
 
         // RecommendProgramDTO 리스트 생성
-        List<RecommendProgramDTO> programs = programsPage.stream()
-                .map(program -> new RecommendProgramDTO(
-                        program.getProgramId(),
-                        program.getProgramName(),
-                        program.getFacultyName(),
-                        program.getProgramTarget(),
-                        program.getProgramStartDate(),
-                        program.getProgramEndDate()
-                ))
+        List<ChatResponseDTO.RecommendProgramDTO> programs = programsPage.stream()
+                .map(program -> ChatResponseDTO.RecommendProgramDTO.of(program))
                 .toList();
         // Chat 저장 (각 프로그램 개별 정보)
         programsPage.forEach(program -> {
             try {
-                String programJson = new ObjectMapper().writeValueAsString(new RecommendProgramDTO(
-                        program.getProgramId(),
-                        program.getProgramName(),
-                        program.getFacultyName(),
-                        program.getProgramTarget(),
-                        program.getProgramStartDate(),
-                        program.getProgramEndDate()
-                ));
+                String programJson = new ObjectMapper().writeValueAsString(ChatResponseDTO.RecommendProgramDTO.of(program));
 
                 saveChat(chatRoomId, true, programJson, currentCriteria);
             } catch (JsonProcessingException e) {
@@ -188,7 +173,7 @@ public class ChatFreeService {
             }
         });
 
-        return ChatFreeResponseDTO.builder()
+        return ChatResponseDTO.builder()
                 .isSuccess(true)
                 .responseMessage(responseMessage)
                 .programs(programs)

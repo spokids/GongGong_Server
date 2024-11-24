@@ -1,7 +1,5 @@
 package com.example.gonggong_server.chatroom.api.controller;
 
-import com.example.gonggong_server.chat.api.request.ChatFreeRequestDTO;
-import com.example.gonggong_server.chat.application.response.ChatFreeResponseDTO;
 import com.example.gonggong_server.chatroom.api.request.ChatChoiceRequestDTO;
 import com.example.gonggong_server.chatroom.application.response.ChatRoomCreateResponseDTO;
 import com.example.gonggong_server.chatroom.application.service.ChatRoomService;

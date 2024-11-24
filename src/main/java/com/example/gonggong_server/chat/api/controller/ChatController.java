@@ -2,8 +2,7 @@ package com.example.gonggong_server.chat.api.controller;
 
 import com.example.gonggong_server.chat.api.request.ChatAbilityRequestDTO;
 import com.example.gonggong_server.chat.api.request.ChatFreeRequestDTO;
-import com.example.gonggong_server.chat.application.response.ChatAbilityResponseDTO;
-import com.example.gonggong_server.chat.application.response.ChatFreeResponseDTO;
+import com.example.gonggong_server.chat.application.response.ChatResponseDTO;
 import com.example.gonggong_server.chat.application.response.ChatListResponseDTO;
 import com.example.gonggong_server.chat.application.service.ChatAbilityService;
 import com.example.gonggong_server.chat.application.service.ChatFreeService;
@@ -25,13 +24,13 @@ public class ChatController {
     private final ChatAbilityService chatAbilityService;
 
     @PostMapping("/v1/chat/completions")
-    public ResponseEntity<ApiResponse<ChatFreeResponseDTO>> processFreeChat(
+    public ResponseEntity<ApiResponse<ChatResponseDTO>> processFreeChat(
             @AuthenticationPrincipal String userInputId,
             @RequestBody ChatFreeRequestDTO request,
             @RequestParam(value = "size", defaultValue = "3") int size,
             @RequestParam(value = "page", defaultValue = "1") int page
     ) {
-        ChatFreeResponseDTO response = chatFreeService.handleUserInput(request, size, page);
+        ChatResponseDTO response = chatFreeService.handleUserInput(request, size, page);
         return ApiResponse.success(SuccessStatus.OK, response);
     }
 
@@ -56,13 +55,13 @@ public class ChatController {
     }
 
     @PostMapping("/chat/ability")
-    public ResponseEntity<ApiResponse<ChatAbilityResponseDTO>> processAbilityChat(
+    public ResponseEntity<ApiResponse<ChatResponseDTO>> processAbilityChat(
             @AuthenticationPrincipal String userInputId,
             @RequestBody ChatAbilityRequestDTO request,
             @RequestParam(value = "size", defaultValue = "3") int size,
             @RequestParam(value = "page", defaultValue = "1") int page
     ) {
-        ChatAbilityResponseDTO response = chatAbilityService.processAbilitiesAndRegion(request, size, page);
+        ChatResponseDTO response = chatAbilityService.processAbilitiesAndRegion(request, size, page);
         return ApiResponse.success(SuccessStatus.OK, response);
     }
 }
