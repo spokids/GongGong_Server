@@ -36,9 +36,11 @@ public class ReviewController {
 
     @GetMapping("/list/{programId}")
     public ResponseEntity<ApiResponse<ReviewListResponseDTO>> getReviews(
-            @PathVariable Long programId
+            @PathVariable Long programId,
+            @RequestParam(name = "lastReviewId", defaultValue = "0") Long lastReviewId,
+            @RequestParam(name = "size", defaultValue = "10") int size
     ) {
-        ReviewListResponseDTO response = reviewService.getReviews(programId);
+        ReviewListResponseDTO response = reviewService.getReviews(programId, lastReviewId, size);
         return ApiResponse.success(SuccessStatus.OK, response);
     }
 }

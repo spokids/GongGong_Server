@@ -7,10 +7,17 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
+import org.springframework.security.core.parameters.P;
 
 import java.util.List;
 
 public interface JpaReviewRepository extends ReviewRepository, JpaRepository<Review, Long> {
+    @Query("SELECT r FROM Review r WHERE r.programId = :programId AND (:lastReviewId = 0 OR r.reviewId < :lastReviewId) ORDER BY r.createDate DESC")
+    List<Review> findReviews(@Param("programId") Long programId,
+                             @Param("lastReviewId") Long lastReviewId,
+                             Pageable pageable);
+
     @Query("SELECT r FROM Review r WHERE r.programId = :programId ORDER BY r.createDate DESC")
     List<Review> findAllByProgramId(Long programId);
 

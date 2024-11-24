@@ -13,6 +13,9 @@ import com.example.gonggong_server.user.domain.entity.User;
 import com.example.gonggong_server.user.domain.repository.UserRepository;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -58,8 +61,14 @@ public class ReviewService {
         }
     }
 
-    public ReviewListResponseDTO getReviews(Long programId) {
-        List<Review> reviews = reviewRepository.findAllByProgramId(programId);
+    public ReviewListResponseDTO getReviews(Long programId, Long lastReviewId, int size) {
+        Pageable pageable = PageRequest.of(0, size + 1);
+        List<Review> reviews = reviewRepository.findReviews(programId, lastReviewId, pageable);
+
+        // 다음 조회할 데이터가 남아있는지 확인
+        boolean hasNext = reviews.size() == size + 1;
+        if (hasNext)
+            reviews = reviews.subList(0, size);
 
         // 리뷰 작성한 사용자 정보 조회
         List<User> users = userRepository.findAllByUserId(
@@ -72,6 +81,6 @@ public class ReviewService {
         List<ReviewListResponseDTO.ReviewDTO> reviewDTOs = reviews.stream()
                 .map(review -> ReviewListResponseDTO.ReviewDTO.of(review, userNicknames)).toList();
 
-        return ReviewListResponseDTO.of(reviewDTOs);
+        return ReviewListResponseDTO.of(reviewDTOs, hasNext);
     }
 }

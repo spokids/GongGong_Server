@@ -16,10 +16,12 @@ import java.util.Map;
 @AllArgsConstructor
 public class ReviewListResponseDTO {
     private List<ReviewDTO> reviews;
+    private Boolean hasNext;
 
-    public static ReviewListResponseDTO of(List<ReviewDTO> reviews) {
+    public static ReviewListResponseDTO of(List<ReviewDTO> reviews, Boolean hasNext) {
         return ReviewListResponseDTO.builder()
                 .reviews(reviews)
+                .hasNext(hasNext)
                 .build();
     }
 

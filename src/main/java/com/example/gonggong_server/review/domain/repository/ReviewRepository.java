@@ -10,6 +10,7 @@ import java.util.List;
 public interface ReviewRepository {
     void deleteByUserId(Long userId);
     Review save(Review review);
+    List<Review> findReviews(Long programId, Long lastReviewId, Pageable pageable);
     List<Review> findAllByProgramId(Long programId);
     Page<Program> findReviewedPrograms(Pageable pageable);
 }
