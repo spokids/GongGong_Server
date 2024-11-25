@@ -1,4 +1,4 @@
-package com.example.gonggong_server.chat.domain.entity;
+package com.example.gonggong_server.option.domain.entity;
 
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
@@ -15,35 +15,20 @@ import java.time.LocalDateTime;
 @EntityListeners(AuditingEntityListener.class)
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor
-public class Chat {
+public class Option {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long chatId;
+    Long optionId;
 
     @NotNull
-    private Long chatRoomId;
+    Long chatRoomId;
 
-    @NotNull
-    private Boolean author;
-
-    private String content;
-
-    @Lob
-    private String currentCriteria;
+    String ability;
 
     @CreatedDate
     @Column(updatable = false)
     private LocalDateTime createDate;
     @LastModifiedDate
     private LocalDateTime modifyDate;
-
-    public static Chat of(Long chatRoomId, Boolean author, String content, String currentCriteria) {
-        Chat chat = new Chat();
-        chat.chatRoomId = chatRoomId;
-        chat.author = author;
-        chat.content = content;
-        chat.currentCriteria = currentCriteria;
-        chat.createDate = LocalDateTime.now(); // 생성 시점
-        return chat;
-    }
 }

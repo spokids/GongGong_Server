@@ -18,7 +18,7 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 public class SecurityConfig {
 
     private final JWTUtil jwtUtil;
-    private final String[] loginUrl = {"/program/scrap/**", "/user/**", "/review/create/**","/review/mypage/**", "/chat/**"};
+    private final String[] loginUrl = {"/program/scrap/**", "/user/**", "/review/create/**","/review/mypage/**", "/chat/**", "/v1/chat/completions", "/chatRoom/**"};
 
     @Bean
     public BCryptPasswordEncoder bCryptPasswordEncoder() {

@@ -11,6 +11,13 @@ import org.springframework.data.repository.query.Param;
 import java.util.List;
 
 public interface JpaProgramRepository extends ProgramRepository, JpaRepository<Program, Long> {
+    @Query("SELECT p FROM Program p " +
+            "WHERE :age BETWEEN p.startAge AND p.endAge " +
+            "AND p.fullAddress LIKE %:location% " +
+            "AND p.type = :type")
+    Page<Program> findProgramsByCriteria(@Param("age") int age,
+                                         @Param("location") String location,
+                                         @Param("type") String type, Pageable pageable);
 
     @Query("SELECT DISTINCT p.districtName FROM Program p WHERE p.provinceName = :province")
     List<String> findSigunguByProvince(@Param("province") String province);
@@ -31,6 +38,14 @@ public interface JpaProgramRepository extends ProgramRepository, JpaRepository<P
             @Param("dong") String dong,
             @Param("age") Integer age,
             @Param("types") List<String> types,
+            Pageable pageable
+    );
+
+    @Query("SELECT p FROM Program p WHERE " +
+            "p.ability IN :abilities AND p.fullAddress LIKE %:region%")
+    Page<Program> findByAbilitiesAndAddress(
+            @Param("abilities") List<String> abilities,
+            @Param("region") String region,
             Pageable pageable
     );
 }

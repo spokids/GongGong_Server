@@ -63,7 +63,6 @@ public class Program {
     private Time startTime;
     private Time endTime;
 
-
     @CreatedDate
     @Column(updatable = false)
     private LocalDateTime createDate;

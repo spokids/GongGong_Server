@@ -15,6 +15,9 @@ public enum ErrorStatus {
     ALREADY_SCRAPPED(HttpStatus.BAD_REQUEST, "이미 스크랩한 프로그램입니다."),
     NOT_SCRAPPED(HttpStatus.BAD_REQUEST, "스크랩하지 않은 프로그램입니다."),
     OVER_REVIEW_CONTENT_LENGTH(HttpStatus.BAD_REQUEST, "리뷰 내용은 300자 이하로 작성해주세요."),
+    JSON_PARSE_ERROR(HttpStatus.BAD_REQUEST, "Json 응답 파싱 실패"),
+    NOT_RIGHT_AGE(HttpStatus.BAD_REQUEST, "올바르지 않은 나이 형식입니다"),
+    INVALID_CHOICE(HttpStatus.BAD_REQUEST, "올바르지 않은 선택입니다"),
 
     // 401
     UNAUTHORIZED(HttpStatus.UNAUTHORIZED, "Unauthorized"),
@@ -30,6 +33,7 @@ public enum ErrorStatus {
     NO_PROGRAMS_FOUND(HttpStatus.NOT_FOUND, "조건에 맞는 프로그램이 존재하지 않습니다."),
     PROGRAM_NOT_EXIST(HttpStatus.NOT_FOUND, "프로그램이 존재하지 않습니다"),
     REVIEW_NOT_EXIST(HttpStatus.NOT_FOUND, "리뷰가 존재하지 않습니다"),
+    CHATROOM_NOT_EXIST(HttpStatus.NOT_FOUND, "톡방이 존재하지 않습니다"),
 
     // 405
     METHOD_NOT_ALLOWED(HttpStatus.METHOD_NOT_ALLOWED, "Method Not Allowed"),

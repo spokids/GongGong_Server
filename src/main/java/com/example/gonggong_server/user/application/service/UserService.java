@@ -1,6 +1,7 @@
 package com.example.gonggong_server.user.application.service;
 
 import com.example.gonggong_server.auth.exception.AuthException;
+import com.example.gonggong_server.chat.application.service.ChatService;
 import com.example.gonggong_server.chat.domain.repository.ChatRepository;
 import com.example.gonggong_server.chatroom.domain.repository.ChatRoomRepository;
 import com.example.gonggong_server.global.status.ErrorStatus;
@@ -22,6 +23,7 @@ public class UserService {
     private final ChatRoomRepository chatRoomRepository;
     private final ChatRepository chatRepository;
     private final ReviewRepository reviewRepository;
+    private final ChatService chatService;
 
     @Transactional
     public void deleteUser(String userInputId) {
@@ -41,7 +43,8 @@ public class UserService {
         scrapRepository.deleteByUserId(userId);
         reviewRepository.deleteByUserId(userId);
         List<Long> chatroomIds = chatRoomRepository.findAllIdsByUserId(userId);
-        chatRepository.deleteByChatroomIds(chatroomIds);
-        chatRoomRepository.deleteByUserId(userId);
+        for(Long chatRoomId : chatroomIds){
+            chatService.deleteChats(chatRoomId);
+        }
     }
 }

@@ -1,6 +1,7 @@
 package com.example.gonggong_server.global.exception;
 
 import com.example.gonggong_server.auth.exception.AuthException;
+import com.example.gonggong_server.chat.exception.ChatException;
 import com.example.gonggong_server.global.response.ApiResponse;
 import com.example.gonggong_server.global.status.ErrorStatus;
 import com.example.gonggong_server.program.exception.ProgramException;
@@ -131,6 +132,12 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
     @ExceptionHandler(ReviewException.class)
     public ResponseEntity<ApiResponse<Void>> handleReviewException(ReviewException e) {
         log.warn(">>>>>>>>ReviewException: {}", e.getErrorStatus().getMessage());
+        return ApiResponse.error(e.getErrorStatus());
+    }
+    // ChatException 처리
+    @ExceptionHandler(ChatException.class)
+    public ResponseEntity<ApiResponse<Void>> handleChatException(ChatException e) {
+        log.warn(">>>>>>>>ChatException: {}", e.getErrorStatus().getMessage());
         return ApiResponse.error(e.getErrorStatus());
     }
 
