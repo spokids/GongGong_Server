@@ -17,6 +17,11 @@ public interface JpaReviewRepository extends ReviewRepository, JpaRepository<Rev
                              @Param("lastReviewId") Long lastReviewId,
                              Pageable pageable);
 
+    @Query("SELECT r FROM Review r WHERE r.userId = :userId AND (:lastReviewId = 0 OR r.reviewId < :lastReviewId) ORDER BY r.createDate DESC")
+    List<Review> findReviewsByUserId(@Param("userId")Long userId,
+                                     @Param("lastReviewId") Long lastReviewId,
+                                     Pageable pageable);
+
     @Query("SELECT r FROM Review r WHERE r.programId = :programId ORDER BY r.createDate DESC")
     List<Review> findAllByProgramId(Long programId);
 
