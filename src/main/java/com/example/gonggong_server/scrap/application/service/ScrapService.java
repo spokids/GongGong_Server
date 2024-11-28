@@ -5,6 +5,7 @@ import com.example.gonggong_server.global.status.ErrorStatus;
 import com.example.gonggong_server.program.domain.entity.Program;
 import com.example.gonggong_server.program.domain.repository.ProgramRepository;
 import com.example.gonggong_server.program.exception.ProgramException;
+import com.example.gonggong_server.review.domain.repository.ReviewRepository;
 import com.example.gonggong_server.scrap.application.response.ScrapListResponseDTO;
 import com.example.gonggong_server.scrap.domain.entity.Scrap;
 import com.example.gonggong_server.scrap.domain.repository.ScrapRepository;
@@ -26,6 +27,7 @@ public class ScrapService {
     private final UserRepository userRepository;
     private final ScrapRepository scrapRepository;
     private final ProgramRepository programRepository;
+    private final ReviewRepository reviewRepository;
 
     @Transactional
     public void scrapProgram(String userInputId, Long programId) {
@@ -72,6 +74,7 @@ public class ScrapService {
     }
     public ScrapListResponseDTO getScrapList(String userInputId, int size, Long lastScrapId) {
         User user = findUserById(userInputId);
+        int reviewCount = reviewRepository.countByUserId(user.getUserId());
 
         Pageable pageable = PageRequest.of(0, size + 1);
         List<Scrap> scraps = scrapRepository.findScraps(user.getUserId(), lastScrapId, pageable);
@@ -83,7 +86,7 @@ public class ScrapService {
 
         List<ScrapListResponseDTO.ScrapProgramDTO> scrapPrograms = convertScrapsToDTOs(scraps);
 
-        return buildScrapListResponse(user, scrapPrograms, hasNext);
+        return buildScrapListResponse(user, scrapPrograms, reviewCount, hasNext);
     }
 
     private List<ScrapListResponseDTO.ScrapProgramDTO> convertScrapsToDTOs(List<Scrap> scraps) {
@@ -106,10 +109,11 @@ public class ScrapService {
                 .toList();
     }
 
-    private ScrapListResponseDTO buildScrapListResponse(User user, List<ScrapListResponseDTO.ScrapProgramDTO> scrapPrograms, boolean hasNext) {
+    private ScrapListResponseDTO buildScrapListResponse(User user, List<ScrapListResponseDTO.ScrapProgramDTO> scrapPrograms, int reviewCount, boolean hasNext) {
         return ScrapListResponseDTO.of(
                 user.getNickName(),
                 user.getUserInputId(),
+                reviewCount,
                 scrapPrograms,
                 hasNext
         );

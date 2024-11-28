@@ -16,18 +16,21 @@ import java.util.List;
 public class ScrapListResponseDTO{
     private String nickName;
     private String userInputId;
+    private int reviewCount;
     private List<ScrapProgramDTO> scraps;
     private Boolean hasNext;
 
     public static ScrapListResponseDTO of(
             String nickName,
             String userInputId,
+            int reviewCount,
             List<ScrapProgramDTO> scraps,
             Boolean hasNext
     ) {
         return ScrapListResponseDTO.builder()
                 .nickName(nickName)
                 .userInputId(userInputId)
+                .reviewCount(reviewCount)
                 .scraps(scraps)
                 .hasNext(hasNext)
                 .build();
