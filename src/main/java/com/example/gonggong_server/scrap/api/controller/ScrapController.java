@@ -37,10 +37,10 @@ public class ScrapController {
     @GetMapping
     public ResponseEntity<ApiResponse<ScrapListResponseDTO>> getScrapList(
             @AuthenticationPrincipal String userInputId,
-            @RequestParam(value = "size", defaultValue = "5") int size,
-            @RequestParam(value = "page", defaultValue = "1") int page
+            @RequestParam(name = "lastScrapId", defaultValue = "0") Long lastScrapId,
+            @RequestParam(value = "size", defaultValue = "5") int size
     ) {
-        ScrapListResponseDTO response = scrapService.getScrapList(userInputId,size, page);
+        ScrapListResponseDTO response = scrapService.getScrapList(userInputId, size, lastScrapId);
         return ApiResponse.success(SuccessStatus.OK, response);
     }
 }

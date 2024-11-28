@@ -12,7 +12,6 @@ import com.example.gonggong_server.scrap.exception.ScrapException;
 import com.example.gonggong_server.user.domain.entity.User;
 import com.example.gonggong_server.user.domain.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -71,15 +70,20 @@ public class ScrapService {
             throw new ScrapException(ErrorStatus.NOT_SCRAPPED);
         }
     }
-    public ScrapListResponseDTO getScrapList(String userInputId, int pageSize, int pageIndex) {
+    public ScrapListResponseDTO getScrapList(String userInputId, int size, Long lastScrapId) {
         User user = findUserById(userInputId);
 
-        Pageable pageable = PageRequest.of(pageIndex - 1, pageSize);
-        Page<Scrap> scraps = scrapRepository.findScraps(user.getUserId(), pageable);
+        Pageable pageable = PageRequest.of(0, size + 1);
+        List<Scrap> scraps = scrapRepository.findScraps(user.getUserId(), lastScrapId, pageable);
 
-        List<ScrapListResponseDTO.ScrapProgramDTO> scrapPrograms = convertScrapsToDTOs(scraps.getContent());
+        // 다음 조회할 데이터가 남아있는지 확인
+        boolean hasNext = scraps.size() == size + 1;
+        if (hasNext)
+            scraps = scraps.subList(0, size);
 
-        return buildScrapListResponse(user, scrapPrograms, scraps);
+        List<ScrapListResponseDTO.ScrapProgramDTO> scrapPrograms = convertScrapsToDTOs(scraps);
+
+        return buildScrapListResponse(user, scrapPrograms, hasNext);
     }
 
     private List<ScrapListResponseDTO.ScrapProgramDTO> convertScrapsToDTOs(List<Scrap> scraps) {
@@ -88,6 +92,7 @@ public class ScrapService {
                     Program program = findProgramById(scrap.getProgramId());
 
                     return ScrapListResponseDTO.ScrapProgramDTO.of(
+                            scrap.getScrapId(),
                             program.getProgramId(),
                             program.getType(),
                             program.getProgramName(),
@@ -101,13 +106,12 @@ public class ScrapService {
                 .toList();
     }
 
-    private ScrapListResponseDTO buildScrapListResponse(User user, List<ScrapListResponseDTO.ScrapProgramDTO> scrapPrograms, Page<Scrap> scraps) {
+    private ScrapListResponseDTO buildScrapListResponse(User user, List<ScrapListResponseDTO.ScrapProgramDTO> scrapPrograms, boolean hasNext) {
         return ScrapListResponseDTO.of(
                 user.getNickName(),
                 user.getUserInputId(),
                 scrapPrograms,
-                scraps.getTotalPages(),
-                scraps.getNumber() + 1 
+                hasNext
         );
     }
 }
