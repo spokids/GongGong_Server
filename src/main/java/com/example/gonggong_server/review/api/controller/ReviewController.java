@@ -48,10 +48,10 @@ public class ReviewController {
     @GetMapping("/mypage")
     public ResponseEntity<ApiResponse<MyReviewListResponseDTO>> getMyReviews(
             @AuthenticationPrincipal String userInputId,
-            @RequestParam(value = "size", defaultValue = "5") int size,
-            @RequestParam(value = "page", defaultValue = "1") int page
+            @RequestParam(name = "lastReviewId", defaultValue = "0") Long lastReviewId,
+            @RequestParam(value = "size", defaultValue = "5") int size
     ) {
-        MyReviewListResponseDTO response = reviewService.getMyReviews(userInputId,size, page);
+        MyReviewListResponseDTO response = reviewService.getMyReviews(userInputId, size, lastReviewId);
         return ApiResponse.success(SuccessStatus.OK, response);
     }
 

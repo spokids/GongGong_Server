@@ -17,7 +17,6 @@ import com.example.gonggong_server.user.domain.entity.User;
 import com.example.gonggong_server.user.domain.repository.UserRepository;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -26,7 +25,6 @@ import org.springframework.web.multipart.MultipartFile;
 import java.io.IOException;
 import java.util.List;
 import java.util.Map;
-import java.util.Random;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
@@ -88,21 +86,22 @@ public class ReviewService {
 
         return ReviewListResponseDTO.of(reviewDTOs, hasNext);
     }
-    public MyReviewListResponseDTO getMyReviews(String userInputId, int pageSize, int pageIndex){
+    public MyReviewListResponseDTO getMyReviews(String userInputId, int size, Long lastReviewId) {
         User user = findUserById(userInputId);
-        Pageable pageable = PageRequest.of(pageIndex - 1, pageSize);
-        Long userId = user.getUserId();
+        Pageable pageable = PageRequest.of(0, size + 1);
+        List<Review> reviews = reviewRepository.findReviewsByUserId(user.getUserId(), lastReviewId, pageable);
 
-        Page<Review> reviewsPage = reviewRepository.findReviews(userId, pageable);
+        // 다음 조회할 데이터가 남아있는지 확인
+        boolean hasNext = reviews.size() == size + 1;
+        if (hasNext)
+            reviews = reviews.subList(0, size);
 
-        List<MyReviewListResponseDTO.MyReviewDTO> reviews = getMyReviewDTOS(reviewsPage);
+        List<MyReviewListResponseDTO.MyReviewDTO> reviewDTOs = getMyReviewDTOS(reviews);
 
-        return MyReviewListResponseDTO.of(user.getNickName(), userInputId, reviews, reviews.size(),reviewsPage.getTotalPages(),
-                reviewsPage.getNumber()+1
-        );
+        return MyReviewListResponseDTO.of(user.getNickName(), userInputId, reviewDTOs, hasNext);
     }
 
-    private List<MyReviewListResponseDTO.MyReviewDTO> getMyReviewDTOS(Page<Review> reviewsPage) {
+    private List<MyReviewListResponseDTO.MyReviewDTO> getMyReviewDTOS(List<Review> reviewsPage) {
         List<MyReviewListResponseDTO.MyReviewDTO> reviews = reviewsPage.stream().map(
                 review -> {
                     Program program = programRepository.findByProgramId(review.getProgramId())

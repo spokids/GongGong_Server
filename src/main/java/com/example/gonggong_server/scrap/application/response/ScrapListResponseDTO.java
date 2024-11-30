@@ -4,7 +4,6 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import org.springframework.data.domain.Page;
 
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
@@ -17,23 +16,23 @@ import java.util.List;
 public class ScrapListResponseDTO{
     private String nickName;
     private String userInputId;
+    private int reviewCount;
     private List<ScrapProgramDTO> scraps;
-    private int totalPage;
-    private int currentPage;
+    private Boolean hasNext;
 
     public static ScrapListResponseDTO of(
             String nickName,
             String userInputId,
+            int reviewCount,
             List<ScrapProgramDTO> scraps,
-            int totalPage,
-            int currentPage
+            Boolean hasNext
     ) {
         return ScrapListResponseDTO.builder()
                 .nickName(nickName)
                 .userInputId(userInputId)
+                .reviewCount(reviewCount)
                 .scraps(scraps)
-                .totalPage(totalPage)
-                .currentPage(currentPage)
+                .hasNext(hasNext)
                 .build();
     }
     @Getter
@@ -41,6 +40,7 @@ public class ScrapListResponseDTO{
     @NoArgsConstructor
     @AllArgsConstructor
     public static class ScrapProgramDTO {
+        private Long scrapId;
         private Long programId;
         private String programType;
         private String programName;
@@ -48,9 +48,10 @@ public class ScrapListResponseDTO{
         private String programAge;
         private String programDate;
 
-        public static ScrapListResponseDTO.ScrapProgramDTO of(Long programId, String programType,String programName, String facilityName,
+        public static ScrapListResponseDTO.ScrapProgramDTO of(Long scrapId, Long programId, String programType,String programName, String facilityName,
                                                            int startAge, int endAge, LocalDate startDate, LocalDate endDate) {
             return ScrapProgramDTO.builder()
+                    .scrapId(scrapId)
                     .programId(programId)
                     .programType(programType)
                     .programName(programName)

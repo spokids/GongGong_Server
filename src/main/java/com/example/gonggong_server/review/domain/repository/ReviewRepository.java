@@ -15,7 +15,7 @@ public interface ReviewRepository {
     List<Review> findReviews(Long programId, Long lastReviewId, Pageable pageable);
     List<Review> findAllByProgramId(Long programId);
     Page<Program> findReviewedPrograms(Pageable pageable);
-    Page<Review> findReviews(Long userId, Pageable pageable);
+    int countByUserId(Long userId);
     Optional<Review> findByReviewId(Long reviewId);
-    Optional<Review> findByUserId(Long userId);
+    List<Review> findReviewsByUserId(Long userId, Long lastReviewId, Pageable pageable);
 }
