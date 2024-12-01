@@ -53,11 +53,16 @@ public class ChatAbilityService {
             Pageable pageable = PageRequest.of(pageIndex - 1, pageSize);
             Page<ChatResponseDTO.RecommendProgramDTO> programPage = findPrograms(chatRoomId, requestDTO.region(), pageable);
 
+            saveResponseMessageChat(chatRoomId, false, requestDTO.region());
+            String responseMessage = "추천 프로그램을 확인하세요!";
+            saveResponseMessageChat(chatRoomId, true, responseMessage);
+
             saveProgramsAsChats(chatRoomId, programPage.getContent());
+
 
             return new ChatResponseDTO(
                     true,
-                    "추천 프로그램을 확인하세요!",
+                    responseMessage,
                     programPage.getContent(),
                     programPage.getTotalPages(),
                     programPage.getNumber()+1
@@ -70,7 +75,6 @@ public class ChatAbilityService {
 
 
     private void saveAbilityChats(Long chatRoomId, List<Ability> abilities) {
-        saveResponseMessageChat(chatRoomId, true, "키우고 싶은 아이의 능력치를 선택해주세요.\n 여러 개 선택할 수도 있어요");
         abilities.forEach(ability -> {
             Option option = Option.builder()
                     .chatRoomId(chatRoomId)
