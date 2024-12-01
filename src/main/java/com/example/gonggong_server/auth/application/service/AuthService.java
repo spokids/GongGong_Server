@@ -18,7 +18,7 @@ import org.springframework.transaction.annotation.Transactional;
 @Transactional
 public class AuthService {
 
-    private static final long ACCESS_TOKEN_EXPIRATION = 7200000L; // 2시간
+    private static final long ACCESS_TOKEN_EXPIRATION = 10800000L; // 3시간
 
     private final UserRepository userRepository;
     private final JWTUtil jwtUtil;
