@@ -20,6 +20,8 @@ import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
 import java.util.*;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 @Service
 @RequiredArgsConstructor
@@ -89,8 +91,34 @@ public class ChatFreeService {
         try {
             return new ObjectMapper().readValue(gptResponse, new TypeReference<>() {});
         } catch (JsonProcessingException e) {
-            throw new ChatException(ErrorStatus.JSON_PARSE_ERROR);
+            return parseCriteriaWithRegex(gptResponse);
         }
+    }
+    private Map<String, String> parseCriteriaWithRegex(String response) {
+        Map<String, String> criteria = new HashMap<>();
+
+        Matcher regionMatcher = Pattern.compile("\"지역\"\\s*:\\s*\"([^\"]*)\"").matcher(response);
+        if (regionMatcher.find()) {
+            criteria.put("지역", regionMatcher.group(1));
+        } else {
+            criteria.put("지역", "");
+        }
+
+        Matcher ageMatcher = Pattern.compile("\"나이\"\\s*:\\s*\"([^\"]*)\"").matcher(response);
+        if (ageMatcher.find()) {
+            criteria.put("나이", ageMatcher.group(1));
+        } else {
+            criteria.put("나이", "");
+        }
+
+        Matcher typeMatcher = Pattern.compile("\"종목\"\\s*:\\s*\"([^\"]*)\"").matcher(response);
+        if (typeMatcher.find()) {
+            criteria.put("종목", typeMatcher.group(1));
+        } else {
+            criteria.put("종목", "");
+        }
+
+        return criteria;
     }
 
     private void mergeCriteria(Map<String, String> currentCriteria, Map<String, String> parsedData) {
