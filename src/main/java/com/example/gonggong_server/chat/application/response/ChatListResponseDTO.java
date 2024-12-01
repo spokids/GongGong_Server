@@ -3,9 +3,9 @@ package com.example.gonggong_server.chat.application.response;
 import java.util.List;
 
 public record ChatListResponseDTO(
-        List<String> chats,
-        List<ChatResponseDTO.RecommendProgramDTO> programs,
+        List<ChatDTO> chats,
         List<String> options,
+        List<ChatResponseDTO.RecommendProgramDTO> programs,
         int totalProgramPages,
         int currentProgramPage
 ) {

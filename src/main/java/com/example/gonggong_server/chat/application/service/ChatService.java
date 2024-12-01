@@ -1,6 +1,7 @@
 package com.example.gonggong_server.chat.application.service;
 
 import com.example.gonggong_server.auth.exception.AuthException;
+import com.example.gonggong_server.chat.application.response.ChatDTO;
 import com.example.gonggong_server.chat.application.response.ChatListResponseDTO;
 import com.example.gonggong_server.chat.application.response.ChatResponseDTO;
 import com.example.gonggong_server.chat.domain.entity.Chat;
@@ -60,21 +61,25 @@ public class ChatService {
 
         // 프로그램 관련 Chats와 일반 Chats 분리
         List<Chat> programChats = new ArrayList<>();
-        List<String> chatMessages = new ArrayList<>();
+        List<ChatDTO> chatDTOs = new ArrayList<>();
         ObjectMapper objectMapper = new ObjectMapper();
 
         for (Chat chat : chats) {
             if (isProgramChat(chat.getContent(), objectMapper)) {
                 programChats.add(chat);
             } else {
-                chatMessages.add(chat.getContent());
+                chatDTOs.add(
+                        ChatDTO.builder()
+                                .chat(chat.getContent())
+                                .sender(chat.getAuthor() ? "bot" :"user")
+                                .build()
+                );
             }
         }
         List<Option> options = optionRepository.findByChatRoomId(recentChatRoom.getChatRoomId());
         List<String> optionValues = options.stream()
                 .map(Option::getAbility)
                 .toList();
-
 
         // 프로그램 Chats를 페이징 처리
         Pageable pageable = PageRequest.of(pageIndex - 1, pageSize);
@@ -87,8 +92,7 @@ public class ChatService {
 
         int totalProgramPages = (int) Math.ceil((double) programChats.size() / pageSize);
 
-        // ChatListResponseDTO 생성
-        return new ChatListResponseDTO(chatMessages, programDTOs, optionValues, totalProgramPages, pageIndex);
+        return new ChatListResponseDTO(chatDTOs,optionValues,programDTOs,totalProgramPages, pageIndex);
     }
 
     private boolean isProgramChat(String content, ObjectMapper objectMapper) {
