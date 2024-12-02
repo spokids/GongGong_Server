@@ -2,10 +2,12 @@ package com.example.gonggong_server.review.api.controller;
 
 import com.example.gonggong_server.global.response.ApiResponse;
 import com.example.gonggong_server.global.status.SuccessStatus;
+import com.example.gonggong_server.review.api.request.ReportRequestDTO;
 import com.example.gonggong_server.review.api.request.ReviewRequestDTO;
 import com.example.gonggong_server.review.application.response.MyReviewListResponseDTO;
 import com.example.gonggong_server.review.application.response.ReviewListResponseDTO;
 import com.example.gonggong_server.review.application.response.ReviewResponseDTO;
+import com.example.gonggong_server.review.application.service.ReportReviewService;
 import com.example.gonggong_server.review.application.service.ReviewService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -22,6 +24,7 @@ import java.io.IOException;
 public class ReviewController {
 
     private final ReviewService reviewService;
+    private final ReportReviewService reportReviewService;
 
     @PostMapping("/create/{programId}")
     public ResponseEntity<ApiResponse<ReviewResponseDTO>> createReview(
@@ -39,9 +42,10 @@ public class ReviewController {
     public ResponseEntity<ApiResponse<ReviewListResponseDTO>> getReviews(
             @PathVariable Long programId,
             @RequestParam(name = "lastReviewId", defaultValue = "0") Long lastReviewId,
-            @RequestParam(name = "size", defaultValue = "10") int size
+            @RequestParam(name = "size", defaultValue = "10") int size,
+            @RequestHeader(name = "Authorization", required = false) String token
     ) {
-        ReviewListResponseDTO response = reviewService.getReviews(programId, lastReviewId, size);
+        ReviewListResponseDTO response = reviewService.getReviews(programId, lastReviewId, size, token);
         return ApiResponse.success(SuccessStatus.OK, response);
     }
 
@@ -61,6 +65,16 @@ public class ReviewController {
             @PathVariable Long reviewId
     ){
         reviewService.deleteMyReview(userInputId,reviewId);
+        return ApiResponse.success(SuccessStatus.OK);
+    }
+
+    @PostMapping("/report/{reviewId}")
+    public ResponseEntity<ApiResponse<String>> postReviewReport(
+            @AuthenticationPrincipal String userInputId,
+            @PathVariable Long reviewId,
+            @RequestBody ReportRequestDTO request
+    ){
+        reportReviewService.postReviewReport(userInputId, reviewId, request);
         return ApiResponse.success(SuccessStatus.OK);
     }
 }
