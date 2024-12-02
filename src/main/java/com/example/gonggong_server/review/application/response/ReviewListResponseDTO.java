@@ -38,10 +38,12 @@ public class ReviewListResponseDTO {
 
         public static ReviewDTO of(Review review, Map<Long, String> userNicknames) {
             DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yy.MM.dd");
+            String nickName = userNicknames.getOrDefault(review.getUserId(), "알 수 없음");
+
 
             return ReviewDTO.builder()
                     .reviewId(review.getReviewId())
-                    .nickName(userNicknames.get(review.getUserId()))
+                    .nickName(nickName)
                     .content(review.getContent())
                     .imageUrl(review.getImageUrl())
                     .createdAt(review.getCreateDate().format(formatter))

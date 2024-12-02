@@ -1,6 +1,7 @@
 package com.example.gonggong_server.review.application.service;
 
 import com.example.gonggong_server.global.exception.GlobalException;
+import com.example.gonggong_server.global.jwt.JWTUtil;
 import com.example.gonggong_server.global.status.ErrorStatus;
 import com.example.gonggong_server.global.util.S3Util;
 import com.example.gonggong_server.program.domain.entity.Program;
@@ -11,7 +12,9 @@ import com.example.gonggong_server.review.application.response.MyReviewListRespo
 import com.example.gonggong_server.review.application.response.ReviewListResponseDTO;
 import com.example.gonggong_server.review.application.response.ReviewResponseDTO;
 import com.example.gonggong_server.review.domain.entity.Review;
+import com.example.gonggong_server.review.domain.repository.ReportReviewRepository;
 import com.example.gonggong_server.review.domain.repository.ReviewRepository;
+import com.example.gonggong_server.review.domain.value.Report;
 import com.example.gonggong_server.review.exception.ReviewException;
 import com.example.gonggong_server.user.domain.entity.User;
 import com.example.gonggong_server.user.domain.repository.UserRepository;
@@ -33,9 +36,11 @@ import java.util.stream.Collectors;
 public class ReviewService {
 
     private final ReviewRepository reviewRepository;
+    private final ReportReviewRepository reportReviewRepository;
     private final ProgramRepository programRepository;
     private final UserRepository userRepository;
     private final S3Util s3Util;
+    private final JWTUtil jwtUtil;
 
     @Transactional
     public ReviewResponseDTO createReview(String userInputId, Long programId, MultipartFile image, ReviewRequestDTO request) throws IOException {
@@ -64,9 +69,10 @@ public class ReviewService {
         }
     }
 
-    public ReviewListResponseDTO getReviews(Long programId, Long lastReviewId, int size) {
+    public ReviewListResponseDTO getReviews(Long programId, Long lastReviewId, int size, String token) {
         Pageable pageable = PageRequest.of(0, size + 1);
-        List<Review> reviews = reviewRepository.findReviews(programId, lastReviewId, pageable);
+
+        List<Review> reviews = findProgramReviews(programId, lastReviewId, token, pageable);
 
         // 다음 조회할 데이터가 남아있는지 확인
         boolean hasNext = reviews.size() == size + 1;
@@ -86,6 +92,16 @@ public class ReviewService {
 
         return ReviewListResponseDTO.of(reviewDTOs, hasNext);
     }
+
+    private List<Review> findProgramReviews(Long programId, Long lastReviewId, String token, Pageable pageable) {
+        if (token != null) {
+            String userInputId = jwtUtil.getUserInputId(token.split(" ")[1]);
+            User user = findUserById(userInputId);
+            return reviewRepository.findReviewsExcludingReported(programId, lastReviewId, user.getUserId(), pageable);
+        }
+        return reviewRepository.findReviews(programId, lastReviewId, pageable);
+    }
+
     public MyReviewListResponseDTO getMyReviews(String userInputId, int size, Long lastReviewId) {
         User user = findUserById(userInputId);
         Pageable pageable = PageRequest.of(0, size + 1);
@@ -111,10 +127,11 @@ public class ReviewService {
                 .toList();
         return reviews;
     }
-
+    @Transactional
     public void deleteMyReview(String userInputId, Long reviewId){
         User user = findUserById(userInputId);
         Review review = getValidatedReview(reviewId, user);
+        reportReviewRepository.deleteByReviewId(review.getReviewId());
         reviewRepository.delete(review);
     }
 
