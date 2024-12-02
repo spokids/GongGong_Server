@@ -30,4 +30,23 @@ public interface JpaReviewRepository extends ReviewRepository, JpaRepository<Rev
 
     @Query("SELECT COUNT(r) FROM Review r WHERE r.userId = :userId")
     int countByUserId(Long userId);
+
+    @Query("""
+    SELECT r 
+    FROM Review r 
+    WHERE r.programId = :programId 
+      AND (:lastReviewId = 0 OR r.reviewId < :lastReviewId)
+      AND r.reviewId NOT IN (
+          SELECT rr.reviewId 
+          FROM ReportReview rr 
+          WHERE rr.userId = :userId
+      )
+    ORDER BY r.createDate DESC
+""")
+    List<Review> findReviewsExcludingReported(
+            @Param("programId") Long programId,
+            @Param("lastReviewId") Long lastReviewId,
+            @Param("userId") Long userId,
+            Pageable pageable
+    );
 }
