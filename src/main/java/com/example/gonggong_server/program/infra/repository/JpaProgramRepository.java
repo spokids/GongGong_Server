@@ -48,4 +48,14 @@ public interface JpaProgramRepository extends ProgramRepository, JpaRepository<P
             @Param("region") String region,
             Pageable pageable
     );
+    @Query(value = "SELECT * FROM Program p " +
+            "WHERE (:province IS NULL OR p.province_name = :province) " +
+            "AND (:abilityValues IS NULL OR p.ability IN (:abilityValues)) " +
+            "AND MATCH(p.full_address) AGAINST(:fullAddress IN BOOLEAN MODE)",
+            nativeQuery = true)
+    Page<Program> searchProgramsWithFullText(
+            @Param("province") String province,
+            @Param("abilityValues") List<String> abilityValues,
+            @Param("fullAddress") String fullAddress,
+            Pageable pageable);
 }

@@ -21,6 +21,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 @Service
 @RequiredArgsConstructor
@@ -88,16 +89,66 @@ public class ChatAbilityService {
         saveResponseMessageChat(chatRoomId, false, abilityMessage);
     }
     private Page<ChatResponseDTO.RecommendProgramDTO> findPrograms(Long chatRoomId, String region, Pageable pageable) {
-        // Option 기준 가져오기
+
         List<String> abilityValues = optionRepository.findByChatRoomId(chatRoomId).stream()
                 .map(Option::getAbility)
                 .toList();
 
-        // 지역 기준과 능력치 기준으로 프로그램 검색 (페이징 적용)
-        Page<Program> programs = programRepository.findByAbilitiesAndAddress(abilityValues, region, pageable);
+        String normalizedRegion = normalizeAddress(region);
+
+        String[] regionParts = normalizedRegion.split(" ");
+        String province = null;
+        StringBuilder fullAddressFilter = new StringBuilder();
+        List<String> provinces = List.of(
+                "강원특별자치도", "경기도", "경상남도", "경상북도",
+                "대구광역시", "부산광역시", "서울특별시",
+                "인천광역시", "충청남도", "충청북도"
+        );
+
+        // Province와 나머지 값 분리
+        for (String part : regionParts) {
+            if (provinces.contains(part)) {
+                province = part;
+            } else {
+                fullAddressFilter.append(part).append(" ");
+            }
+        }
+        String fullAddress = fullAddressFilter.toString().trim();
+
+        // FULLTEXT 기반 검색 수행
+        Page<Program> programs = programRepository.searchProgramsWithFullText(
+                province, abilityValues, fullAddress, pageable);
 
         return programs.map(program -> ChatResponseDTO.RecommendProgramDTO.of(program));
     }
+
+    private String normalizeAddress(String address) {
+        Map<String, String> mapping = Map.ofEntries(
+                Map.entry("서울시", "서울특별시"),
+                Map.entry("경기", "경기도"),
+                Map.entry("대구", "대구광역시"),
+                Map.entry("인천", "인천광역시"),
+                Map.entry("서울", "서울특별시"),
+                Map.entry("경남", "경상남도"),
+                Map.entry("경북", "경상북도"),
+                Map.entry("부산시", "부산광역시"),
+                Map.entry("부산", "부산광역시"),
+                Map.entry("충남", "충청남도"),
+                Map.entry("충북", "충청북도"),
+                Map.entry("강원도", "강원특별자치도"),
+                Map.entry("강원", "강원특별자치도")
+        );
+
+        String[] parts = address.split(" ");
+        StringBuilder normalized = new StringBuilder();
+
+        for (String part : parts) {
+            normalized.append(mapping.getOrDefault(part, part)).append(" ");
+        }
+
+        return normalized.toString().trim();
+    }
+
 
     private void saveProgramsAsChats(Long chatRoomId, List<ChatResponseDTO.RecommendProgramDTO> programs) {
         programs.forEach(program -> {
