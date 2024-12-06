@@ -20,8 +20,10 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -113,7 +115,12 @@ public class ChatAbilityService {
                 fullAddressFilter.append(part).append(" ");
             }
         }
-        String fullAddress = fullAddressFilter.toString().trim();
+
+//         각 단어에 와일드카드 추가
+        String fullAddress = fullAddressFilter.toString().trim().isEmpty() ? null :
+                Arrays.stream(fullAddressFilter.toString().trim().split(" "))
+                        .map(part -> part + "*")
+                        .collect(Collectors.joining(" "));
 
         // FULLTEXT 기반 검색 수행
         Page<Program> programs = programRepository.searchProgramsWithFullText(
