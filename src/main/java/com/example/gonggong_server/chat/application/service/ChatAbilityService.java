@@ -32,6 +32,27 @@ public class ChatAbilityService {
     private final ChatRepository chatRepository;
     private final OptionRepository optionRepository;
     private final ProgramRepository programRepository;
+    private static final List<String> PROVINCES = List.of(
+            "강원특별자치도", "경기도", "경상남도", "경상북도",
+            "대구광역시", "부산광역시", "서울특별시",
+            "인천광역시", "충청남도", "충청북도"
+    );
+
+    private static final Map<String, String> REGION_MAPPING = Map.ofEntries(
+            Map.entry("서울시", "서울특별시"),
+            Map.entry("경기", "경기도"),
+            Map.entry("대구", "대구광역시"),
+            Map.entry("인천", "인천광역시"),
+            Map.entry("서울", "서울특별시"),
+            Map.entry("경남", "경상남도"),
+            Map.entry("경북", "경상북도"),
+            Map.entry("부산시", "부산광역시"),
+            Map.entry("부산", "부산광역시"),
+            Map.entry("충남", "충청남도"),
+            Map.entry("충북", "충청북도"),
+            Map.entry("강원도", "강원특별자치도"),
+            Map.entry("강원", "강원특별자치도")
+    );
 
     public ChatResponseDTO processAbilitiesAndRegion(ChatAbilityRequestDTO requestDTO, int pageSize, int pageIndex) {
         Long chatRoomId = requestDTO.chatRoomId();
@@ -90,70 +111,47 @@ public class ChatAbilityService {
                 .toList());
         saveResponseMessageChat(chatRoomId, false, abilityMessage);
     }
+
     private Page<ChatResponseDTO.RecommendProgramDTO> findPrograms(Long chatRoomId, String region, Pageable pageable) {
 
+        // 능력치 가져오기
         List<String> abilityValues = optionRepository.findByChatRoomId(chatRoomId).stream()
                 .map(Option::getAbility)
                 .toList();
 
+        // 지역 정규화 및 검색 조건 분리
         String normalizedRegion = normalizeAddress(region);
 
         String[] regionParts = normalizedRegion.split(" ");
         String province = null;
         StringBuilder fullAddressFilter = new StringBuilder();
-        List<String> provinces = List.of(
-                "강원특별자치도", "경기도", "경상남도", "경상북도",
-                "대구광역시", "부산광역시", "서울특별시",
-                "인천광역시", "충청남도", "충청북도"
-        );
 
         // Province와 나머지 값 분리
         for (String part : regionParts) {
-            if (provinces.contains(part)) {
+            if (PROVINCES.contains(part)) {
                 province = part;
             } else {
                 fullAddressFilter.append(part).append(" ");
             }
         }
 
-//         각 단어에 와일드카드 추가
-        String fullAddress = fullAddressFilter.toString().trim().isEmpty() ? null :
+        // 각 단어에 와일드카드 추가
+        String remainingAddress = fullAddressFilter.toString().trim().isEmpty() ? null :
                 Arrays.stream(fullAddressFilter.toString().trim().split(" "))
                         .map(part -> part + "*")
                         .collect(Collectors.joining(" "));
 
         // FULLTEXT 기반 검색 수행
         Page<Program> programs = programRepository.searchProgramsWithFullText(
-                province, abilityValues, fullAddress, pageable);
+                province, abilityValues, remainingAddress, pageable);
 
         return programs.map(program -> ChatResponseDTO.RecommendProgramDTO.of(program));
     }
 
     private String normalizeAddress(String address) {
-        Map<String, String> mapping = Map.ofEntries(
-                Map.entry("서울시", "서울특별시"),
-                Map.entry("경기", "경기도"),
-                Map.entry("대구", "대구광역시"),
-                Map.entry("인천", "인천광역시"),
-                Map.entry("서울", "서울특별시"),
-                Map.entry("경남", "경상남도"),
-                Map.entry("경북", "경상북도"),
-                Map.entry("부산시", "부산광역시"),
-                Map.entry("부산", "부산광역시"),
-                Map.entry("충남", "충청남도"),
-                Map.entry("충북", "충청북도"),
-                Map.entry("강원도", "강원특별자치도"),
-                Map.entry("강원", "강원특별자치도")
-        );
-
-        String[] parts = address.split(" ");
-        StringBuilder normalized = new StringBuilder();
-
-        for (String part : parts) {
-            normalized.append(mapping.getOrDefault(part, part)).append(" ");
-        }
-
-        return normalized.toString().trim();
+        return Arrays.stream(address.split(" "))
+                .map(part -> REGION_MAPPING.getOrDefault(part, part))
+                .collect(Collectors.joining(" "));
     }
 
 
