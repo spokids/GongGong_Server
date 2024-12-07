@@ -5,8 +5,10 @@ import com.example.gonggong_server.chat.application.service.ChatService;
 import com.example.gonggong_server.chat.domain.repository.ChatRepository;
 import com.example.gonggong_server.chatroom.domain.repository.ChatRoomRepository;
 import com.example.gonggong_server.global.status.ErrorStatus;
+import com.example.gonggong_server.review.domain.repository.ReportReviewRepository;
 import com.example.gonggong_server.review.domain.repository.ReviewRepository;
 import com.example.gonggong_server.scrap.domain.repository.ScrapRepository;
+import com.example.gonggong_server.user.application.response.UserInfoResponseDTO;
 import com.example.gonggong_server.user.domain.entity.User;
 import com.example.gonggong_server.user.domain.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
@@ -21,7 +23,7 @@ public class UserService {
     private final UserRepository userRepository;
     private final ScrapRepository scrapRepository;
     private final ChatRoomRepository chatRoomRepository;
-    private final ChatRepository chatRepository;
+    private final ReportReviewRepository reportReviewRepository;
     private final ReviewRepository reviewRepository;
     private final ChatService chatService;
 
@@ -42,9 +44,15 @@ public class UserService {
     private void deleteUserRelatedData(Long userId) {
         scrapRepository.deleteByUserId(userId);
         reviewRepository.deleteByUserId(userId);
+        reportReviewRepository.deleteByUserId(userId);
         List<Long> chatroomIds = chatRoomRepository.findAllIdsByUserId(userId);
         for(Long chatRoomId : chatroomIds){
             chatService.deleteChats(chatRoomId);
         }
+    }
+
+    public UserInfoResponseDTO getUserInfo(String userInputId){
+        User user = findUserById(userInputId);
+        return new UserInfoResponseDTO(user.getNickName(),user.getUserInputId());
     }
 }
