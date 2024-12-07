@@ -114,7 +114,7 @@ public class ReviewService {
 
         List<MyReviewListResponseDTO.MyReviewDTO> reviewDTOs = getMyReviewDTOS(reviews);
 
-        return MyReviewListResponseDTO.of(user.getNickName(), userInputId, reviewDTOs, hasNext);
+        return MyReviewListResponseDTO.of(reviewDTOs, hasNext);
     }
 
     private List<MyReviewListResponseDTO.MyReviewDTO> getMyReviewDTOS(List<Review> reviewsPage) {
