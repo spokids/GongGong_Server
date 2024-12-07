@@ -86,7 +86,7 @@ public class ScrapService {
 
         List<ScrapListResponseDTO.ScrapProgramDTO> scrapPrograms = convertScrapsToDTOs(scraps);
 
-        return buildScrapListResponse(user, scrapPrograms, reviewCount, hasNext);
+        return buildScrapListResponse(scrapPrograms, reviewCount, hasNext);
     }
 
     private List<ScrapListResponseDTO.ScrapProgramDTO> convertScrapsToDTOs(List<Scrap> scraps) {
@@ -109,10 +109,8 @@ public class ScrapService {
                 .toList();
     }
 
-    private ScrapListResponseDTO buildScrapListResponse(User user, List<ScrapListResponseDTO.ScrapProgramDTO> scrapPrograms, int reviewCount, boolean hasNext) {
+    private ScrapListResponseDTO buildScrapListResponse(List<ScrapListResponseDTO.ScrapProgramDTO> scrapPrograms, int reviewCount, boolean hasNext) {
         return ScrapListResponseDTO.of(
-                user.getNickName(),
-                user.getUserInputId(),
                 reviewCount,
                 scrapPrograms,
                 hasNext

@@ -15,16 +15,13 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 public class MyReviewListResponseDTO {
-    private String nickName;
-    private String userInputId;
+
     private List<MyReviewDTO> reviews;
     private Boolean hasNext;
 
-    public static MyReviewListResponseDTO of(String nickName, String userInputId, List<MyReviewDTO> reviewDTOs, Boolean hasNext){
+    public static MyReviewListResponseDTO of(List<MyReviewDTO> reviewDTOs, Boolean hasNext){
         return MyReviewListResponseDTO.builder()
-                .nickName(nickName)
                 .reviews(reviewDTOs)
-                .userInputId(userInputId)
                 .hasNext(hasNext)
                 .build();
     }
