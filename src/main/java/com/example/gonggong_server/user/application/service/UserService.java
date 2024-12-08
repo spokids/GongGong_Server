@@ -53,6 +53,7 @@ public class UserService {
 
     public UserInfoResponseDTO getUserInfo(String userInputId){
         User user = findUserById(userInputId);
-        return new UserInfoResponseDTO(user.getNickName(),user.getUserInputId());
+        int reviewCount = reviewRepository.countByUserId(user.getUserId());
+        return new UserInfoResponseDTO(user.getNickName(),user.getUserInputId(), reviewCount);
     }
 }
